@@ -5,18 +5,17 @@ import { usePathname } from 'next/navigation';
 import { Menu, X, Trophy, GraduationCap, BarChart2, Home, BookOpen, Zap } from 'lucide-react';
 
 const links = [
-  { href: '/home', label: 'Home', icon: Home },
-  { href: '/universities', label: 'Universities', icon: GraduationCap },
-  { href: '/sports', label: 'Sports', icon: Trophy },
-  { href: '/academics', label: 'Academics', icon: BookOpen },
-  { href: '/compare', label: 'Compare', icon: BarChart2 },
+  { href: '/home',        label: 'Home',         icon: Home },
+  { href: '/universities',label: 'Universities',  icon: GraduationCap },
+  { href: '/sports',      label: 'Sports',        icon: Trophy },
+  { href: '/academics',   label: 'Academics',     icon: BookOpen },
+  { href: '/compare',     label: 'Compare',       icon: BarChart2 },
 ];
 
 export default function Navbar() {
-  const pathname = usePathname();
+  const pathname  = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  // hide nav on root landing page
+  const [open,     setOpen]     = useState(false);
   const isLanding = pathname === '/';
 
   useEffect(() => {
@@ -25,68 +24,109 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', h);
   }, []);
 
+  // Close mobile menu on route change
+  useEffect(() => { setOpen(false); }, [pathname]);
+
   if (isLanding) return null;
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'py-3' : 'py-5'}`}
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'py-2 sm:py-3' : 'py-3 sm:py-4'}`}
       style={{
-        background: scrolled ? 'rgba(3,5,13,0.88)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(28px) saturate(1.8)' : 'none',
+        background: scrolled ? 'rgba(3,5,13,0.92)' : 'rgba(3,5,13,0.5)',
+        backdropFilter: 'blur(24px) saturate(1.6)',
         borderBottom: scrolled ? '1px solid rgba(79,142,247,0.1)' : '1px solid transparent',
-      }}>
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden"
-            style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)', boxShadow: '0 0 20px rgba(79,142,247,0.4)' }}>
-            <Zap size={18} className="text-white relative z-10" />
+      }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)', boxShadow: '0 0 16px rgba(79,142,247,0.4)' }}>
+            <Zap size={16} className="text-white" />
           </div>
-          <div className="hidden sm:block">
-            <div className="font-display text-xl tracking-widest leading-none">
-              <span className="grad">FACT</span><span className="text-white/50">-U</span>
+          <div className="hidden sm:block leading-none">
+            <div className="font-display text-lg tracking-widest">
+              <span className="grad">FACT</span>
+              <span style={{ color: 'rgba(255,255,255,0.4)' }}>-U</span>
             </div>
-            <div className="text-[9px] tracking-[0.25em] text-white/25 uppercase font-syne">UAAP Universe</div>
+            <div style={{ fontSize: '8px', letterSpacing: '0.22em', color: 'rgba(255,255,255,0.22)', textTransform: 'uppercase', fontFamily: "'Syne',sans-serif" }}>
+              UAAP Universe
+            </div>
           </div>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1 glass rounded-full px-2 py-2"
-          style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
+        {/* Desktop nav */}
+        <div className="hidden md:flex items-center gap-0.5 glass rounded-full px-1.5 py-1.5"
+          style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
           {links.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || (href !== '/home' && pathname.startsWith(href));
             return (
               <Link key={href} href={href}
-                className={`relative flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${active ? 'text-white' : 'text-white/45 hover:text-white/80'}`}
-                style={active ? { background: 'rgba(79,142,247,0.15)', border: '1px solid rgba(79,142,247,0.3)' } : {}}>
-                <Icon size={13} />{label}
+                className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${active ? 'text-white' : 'hover:text-white/80'}`}
+                style={{
+                  color: active ? '#fff' : 'rgba(220,228,255,0.45)',
+                  background: active ? 'rgba(79,142,247,0.15)' : 'transparent',
+                  border: active ? '1px solid rgba(79,142,247,0.3)' : '1px solid transparent',
+                }}
+              >
+                <Icon size={13} />
+                {label}
               </Link>
             );
           })}
         </div>
 
-        <div className="hidden md:flex gap-3">
-          <Link href="/compare" className="btn-primary text-sm">Compare Schools</Link>
+        {/* Desktop CTA */}
+        <div className="hidden md:flex gap-3 items-center flex-shrink-0">
+          <Link href="/compare" className="btn-primary" style={{ padding: '0.6rem 1.4rem', fontSize: '0.82rem' }}>
+            Compare Schools
+          </Link>
         </div>
 
-        <button className="md:hidden glass p-2.5 rounded-xl" onClick={() => setOpen(!open)}
-          style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
-          {open ? <X size={18} /> : <Menu size={18} />}
-        </button>
+        {/* Mobile: logo text + toggle */}
+        <div className="flex items-center gap-3 md:hidden">
+          <span className="font-display text-base tracking-widest">
+            <span className="grad">FACT</span>
+            <span style={{ color: 'rgba(255,255,255,0.35)' }}>-U</span>
+          </span>
+          <button
+            className="p-2 rounded-xl glass flex-shrink-0"
+            style={{ border: '1px solid rgba(255,255,255,0.1)' }}
+            onClick={() => setOpen(!open)}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+          >
+            {open ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
       </div>
 
+      {/* Mobile dropdown */}
       {open && (
-        <div className="md:hidden mx-4 mt-2 rounded-2xl glass-md p-3 space-y-1 anim-scale-in"
+        <div className="md:hidden mx-3 mt-2 rounded-2xl glass-md p-2 space-y-0.5 anim-scale-in"
           style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
           {links.map(({ href, label, icon: Icon }) => {
-            const active = pathname === href;
+            const active = pathname === href || (href !== '/home' && pathname.startsWith(href));
             return (
-              <Link key={href} href={href} onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${active ? 'text-blue-300' : 'text-white/50 hover:text-white'}`}
-                style={active ? { background: 'rgba(79,142,247,0.12)' } : {}}>
-                <Icon size={15} />{label}
+              <Link key={href} href={href}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${active ? '' : 'hover:bg-white/5'}`}
+                style={{
+                  color: active ? '#93c5fd' : 'rgba(220,228,255,0.6)',
+                  background: active ? 'rgba(79,142,247,0.12)' : 'transparent',
+                  border: active ? '1px solid rgba(79,142,247,0.2)' : '1px solid transparent',
+                }}
+              >
+                <Icon size={16} />
+                {label}
               </Link>
             );
           })}
-          <div className="pt-2 border-t border-white/8">
-            <Link href="/compare" onClick={() => setOpen(false)} className="btn-primary w-full text-sm justify-center">
+          <div className="pt-2 mt-2 border-t border-white/8 pb-1">
+            <Link href="/compare"
+              className="btn-primary w-full justify-center"
+              style={{ padding: '0.7rem 1.2rem', fontSize: '0.85rem' }}
+            >
               Compare Schools
             </Link>
           </div>

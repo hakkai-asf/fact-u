@@ -1,106 +1,121 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-interface Particle {
-  x: number; y: number; vx: number; vy: number;
-  size: number; opacity: number; color: string; life: number; maxLife: number;
+interface Props {
+  count?: number;
+  colors?: string[];
 }
 
-export default function ParticleField({ count = 60, colors = ['#4f8ef7','#a78bfa','#38bdf8','#34d399'] }: {
-  count?: number; colors?: string[];
-}) {
+// Lightweight particle field — reduced count on mobile for performance
+export default function ParticleField({
+  count = 50,
+  colors = ['#4f8ef7','#a78bfa','#38bdf8','#34d399'],
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particles = useRef<Particle[]>([]);
-  const mouse     = useRef({ x: -1000, y: -1000 });
-  const raf       = useRef<number>(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current!;
-    const ctx    = canvas.getContext('2d')!;
+    if (!mounted) return;
 
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    // Reduce count on mobile/low-power devices
+    const isMobile = window.matchMedia('(pointer: coarse)').matches;
+    const actualCount = isMobile ? Math.min(count, 25) : count;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let raf = 0;
+    const mouse = { x: -9999, y: -9999 };
+
+    const resize = () => {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', resize, { passive: true });
 
-    const spawnParticle = (): Particle => ({
+    type P = { x:number; y:number; vx:number; vy:number; r:number; col:string; a:number; life:number; max:number };
+    const spawn = (): P => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4 - 0.2,
-      size: Math.random() * 2 + 0.5,
-      opacity: Math.random() * 0.5 + 0.1,
-      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - .5) * .4,
+      vy: (Math.random() - .5) * .4 - .15,
+      r: Math.random() * 1.8 + .5,
+      col: colors[Math.floor(Math.random() * colors.length)],
+      a: Math.random() * .4 + .1,
       life: 0,
-      maxLife: Math.random() * 300 + 200,
+      max: Math.random() * 320 + 200,
     });
 
-    particles.current = Array.from({ length: count }, spawnParticle);
+    const ps: P[] = Array.from({ length: actualCount }, spawn);
 
-    const onMouse = (e: MouseEvent) => { mouse.current = { x: e.clientX, y: e.clientY }; };
-    window.addEventListener('mousemove', onMouse);
+    const onMouse = (e: MouseEvent) => { mouse.x = e.clientX; mouse.y = e.clientY; };
+    if (!isMobile) window.addEventListener('mousemove', onMouse, { passive: true });
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.current.forEach((p, i) => {
+      for (let i = 0; i < ps.length; i++) {
+        const p = ps[i];
         p.life++;
-        if (p.life > p.maxLife) { particles.current[i] = spawnParticle(); return; }
+        if (p.life > p.max) { ps[i] = spawn(); continue; }
 
-        // Magnetic effect toward mouse
-        const dx = mouse.current.x - p.x;
-        const dy = mouse.current.y - p.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 200) {
-          p.vx += (dx / dist) * 0.015;
-          p.vy += (dy / dist) * 0.015;
+        // Mouse magnetism (desktop only)
+        if (!isMobile) {
+          const dx = mouse.x - p.x, dy = mouse.y - p.y, d = Math.hypot(dx, dy);
+          if (d < 160) { p.vx += (dx / d) * .012; p.vy += (dy / d) * .012; }
         }
+        p.vx *= .988; p.vy *= .988;
+        p.x += p.vx; p.y += p.vy;
 
-        p.vx *= 0.99; p.vy *= 0.99;
-        p.x  += p.vx; p.y  += p.vy;
-
-        const lifeFrac = p.life / p.maxLife;
-        const alpha    = p.opacity * (lifeFrac < 0.1 ? lifeFrac * 10 : lifeFrac > 0.8 ? (1 - lifeFrac) * 5 : 1);
+        const t = p.life / p.max;
+        const alpha = p.a * (t < .1 ? t * 10 : t > .8 ? (1 - t) * 5 : 1);
 
         ctx.save();
         ctx.globalAlpha = alpha;
-        ctx.fillStyle   = p.color;
-        ctx.shadowBlur  = p.size * 4;
-        ctx.shadowColor = p.color;
+        ctx.shadowBlur  = p.r * 5;
+        ctx.shadowColor = p.col;
+        ctx.fillStyle   = p.col;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
 
-        // Connect nearby particles
-        particles.current.forEach(q => {
-          const qx = q.x - p.x, qy = q.y - p.y;
-          const d  = Math.sqrt(qx * qx + qy * qy);
-          if (d < 90 && d > 0) {
-            ctx.globalAlpha = alpha * (1 - d / 90) * 0.15;
-            ctx.strokeStyle = p.color;
-            ctx.lineWidth   = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(q.x, q.y);
-            ctx.stroke();
+        // Connect — only on desktop, fewer connections
+        if (!isMobile) {
+          for (let j = i + 1; j < Math.min(i + 8, ps.length); j++) {
+            const q = ps[j], qd = Math.hypot(q.x - p.x, q.y - p.y);
+            if (qd < 80) {
+              ctx.globalAlpha = alpha * (1 - qd / 80) * .1;
+              ctx.strokeStyle = p.col;
+              ctx.lineWidth   = .35;
+              ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+            }
           }
-        });
+        }
         ctx.restore();
-      });
-      raf.current = requestAnimationFrame(draw);
+      }
+      raf = requestAnimationFrame(draw);
     };
-    raf.current = requestAnimationFrame(draw);
+    raf = requestAnimationFrame(draw);
 
     return () => {
+      cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', onMouse);
-      cancelAnimationFrame(raf.current);
+      if (!isMobile) window.removeEventListener('mousemove', onMouse);
     };
-  }, [count, colors]);
+  }, [mounted, count, colors]);
+
+  if (!mounted) return null;
 
   return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 0, opacity: 0.6 }}
+      style={{ zIndex: 0, opacity: .55 }}
+      aria-hidden="true"
     />
   );
 }
