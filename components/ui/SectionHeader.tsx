@@ -1,25 +1,27 @@
 interface Props {
-  badge?: string;
-  title: string;
-  titleGrad?: string;
-  subtitle?: string;
-  center?: boolean;
+  badge?: string; title: string; titleGrad?: string;
+  subtitle?: string; center?: boolean; badgeColor?: string;
 }
-
-export default function SectionHeader({ badge, title, titleGrad, subtitle, center = true }: Props) {
+export default function SectionHeader({ badge, title, titleGrad, subtitle, center = true, badgeColor = '#4f8ef7' }: Props) {
   return (
-    <div className={`mb-12 ${center ? 'text-center' : ''}`}>
+    <div className={`mb-16 ${center ? 'text-center' : ''}`}>
       {badge && (
-        <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-4 ${center ? 'mx-auto' : ''}`}
-          style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.3)', color: '#93c5fd' }}>
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+        <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-syne font-600 tracking-widest uppercase mb-5 ${center ? 'mx-auto' : ''}`}
+          style={{ background: `${badgeColor}18`, border: `1px solid ${badgeColor}35`, color: badgeColor }}>
+          <span className="w-1.5 h-1.5 rounded-full dot-pulse" style={{ background: badgeColor }} />
           {badge}
         </div>
       )}
-      <h2 className="font-syne font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight mb-4">
-        {title}{titleGrad && <span className="grad-text"> {titleGrad}</span>}
+      <h2 className="font-syne font-800 tracking-tight mb-4 leading-[1.0]"
+        style={{ fontSize: 'clamp(2rem,4.5vw,3.5rem)' }}>
+        {title}{titleGrad && <span className="grad"> {titleGrad}</span>}
       </h2>
-      {subtitle && <p className="text-white/50 text-lg max-w-2xl" style={center ? { margin: '0 auto' } : {}}>{subtitle}</p>}
+      {subtitle && (
+        <p className="text-white/40 text-lg max-w-2xl leading-relaxed"
+          style={center ? { margin: '0 auto' } : {}}>
+          {subtitle}
+        </p>
+      )}
     </div>
   );
 }

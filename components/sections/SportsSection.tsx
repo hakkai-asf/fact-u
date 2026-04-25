@@ -1,104 +1,94 @@
 'use client';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { Trophy, Flame, Star } from 'lucide-react';
+import { Trophy, Flame, ChevronRight } from 'lucide-react';
 
-const sportHighlights = [
-  {
-    sport: 'Basketball',
-    emoji: '🏀',
-    color: '#f97316',
-    dominant: 'DLSU (20 titles), UE (18), Ateneo (12)',
-    highlight: 'Most-watched UAAP sport. The FEU-DLSU-Ateneo-UP rivalries define Philippine sports culture.',
-    mvps: 'Ben Mbala, Ange Kouamé, Ricci Rivero',
-  },
-  {
-    sport: 'Volleyball',
-    emoji: '🏐',
-    color: '#a855f7',
-    dominant: 'NU (9 titles), DLSU (9), UST (9)',
-    highlight: 'NU Lady Bulldogs set the standard with a historic 4-peat dynasty (2021–2024).',
-    mvps: 'Alyssa Valdez, Aiza Maizo, Tots Carlos',
-  },
-  {
-    sport: 'Cheerdance',
-    emoji: '📣',
-    color: '#eab308',
-    dominant: 'UST Pep Squad (13 titles)',
-    highlight: 'The UAAP CDC is the most intense non-athletic competition — UST is the reigning dynasty.',
-    mvps: 'UST Pep Squad — perennial champions',
-  },
-  {
-    sport: 'Football',
-    emoji: '⚽',
-    color: '#22c55e',
-    dominant: 'UP Fighting Maroons (6 titles)',
-    highlight: 'UP has emerged as the dominant football program, winning back-to-back in recent seasons.',
-    mvps: 'Multiple UP Scholar-athletes',
-  },
+const sports = [
+  { emoji:'🏀', name:'Basketball', color:'#f97316', desc:'The crown jewel. DLSU leads all-time with 20 titles. The Ateneo-DLSU rivalry is Philippine sports culture.',    stat:'20 all-time titles by DLSU' },
+  { emoji:'🏐', name:'Volleyball',  color:'#a855f7', desc:'NU Lady Bulldogs own a historic 4-peat dynasty. UST and DLSU are perennial challengers.',                   stat:'4-peat dynasty by NU (2021–24)' },
+  { emoji:'📣', name:'Cheerdance', color:'#eab308', desc:'UST Pep Squad is the most dominant program ever — 13 titles and counting. The CDC is its own religion.',       stat:'13 championships by UST' },
+  { emoji:'⚽', name:'Football',    color:'#22c55e', desc:'UP Fighting Maroons dominate modern football, leveraging a strong scholarship pipeline and technical coaching.', stat:'6 recent titles by UP' },
 ];
 
 export default function SportsSection() {
+  const [active, setActive] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   return (
-    <section className="py-24 px-6 relative">
+    <section className="py-28 px-6 relative overflow-hidden">
+      {/* BG accent */}
+      <div className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse 50% 40% at 30% 50%, rgba(249,115,22,0.06), transparent)' }} />
+
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-4"
-            style={{ background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.3)', color: '#fb923c' }}>
-            <Trophy size={12} />
-            UAAP Sports Culture
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-syne font-600 tracking-widest uppercase mb-5 glass-bright"
+              style={{ border: '1px solid rgba(249,115,22,0.3)', color: '#fb923c' }}>
+              <Trophy size={11} /> UAAP Sports Culture
+            </div>
+            <h2 className="font-syne font-800 text-5xl md:text-6xl tracking-tight">
+              The Spirit of<br /><span className="grad-warm">Competition</span>
+            </h2>
           </div>
-          <h2 className="font-syne font-800 text-4xl md:text-5xl tracking-tight mb-3">
-            The Spirit of <span style={{ background: 'linear-gradient(135deg,#f97316,#ef4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Competition</span>
-          </h2>
-          <p className="text-white/40 text-lg max-w-xl mx-auto">
-            Over 85 years of athletic tradition, rivalry, and school pride across 15+ sports tournaments.
+          <p className="text-white/35 text-base max-w-xs md:text-right leading-relaxed">
+            85+ years of athletic tradition, legendary rivalries, and championship dynasties.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {sportHighlights.map((s) => (
-            <div
-              key={s.sport}
-              className="glass rounded-3xl p-6 transition-all duration-300 hover:scale-[1.02] group"
-              style={{ border: `1px solid ${s.color}33` }}
-            >
-              <div className="flex items-start gap-4">
-                <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
-                  style={{ background: `${s.color}22`, border: `1px solid ${s.color}44` }}
-                >
-                  {s.emoji}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-syne font-700 text-xl" style={{ color: s.color }}>{s.sport}</h3>
-                    <Flame size={14} style={{ color: s.color }} />
-                  </div>
-                  <p className="text-white/60 text-sm mb-3 leading-relaxed">{s.highlight}</p>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="flex gap-2">
-                      <span className="text-white/30 w-20 flex-shrink-0">Dominant:</span>
-                      <span className="text-white/60">{s.dominant}</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <span className="text-white/30 w-20 flex-shrink-0">Stars:</span>
-                      <span className="text-white/60">{s.mvps}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* Sport selector pills */}
+        <div className="flex flex-wrap gap-2 mb-10">
+          {sports.map((s, i) => (
+            <button key={s.name} onClick={() => setActive(i)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-syne font-600 transition-all duration-400 btn-magnetic"
+              style={active === i
+                ? { background: `${s.color}20`, border: `1px solid ${s.color}55`, color: s.color, boxShadow: `0 0 25px ${s.color}33` }
+                : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)' }
+              }>
+              {s.emoji} {s.name}
+            </button>
           ))}
         </div>
 
-        <div className="text-center mt-12">
-          <Link
-            href="/sports"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all hover:scale-105"
-            style={{ background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.4)', color: '#fb923c' }}
-          >
-            <Trophy size={16} />
-            View Full Sports Hub
+        {/* Active sport card */}
+        <div className="relative overflow-hidden rounded-3xl glass-md p-8 md:p-12 mb-8"
+          style={{
+            border: `1px solid ${sports[active].color}33`,
+            boxShadow: `0 0 60px ${sports[active].color}15`,
+            transition: 'all 0.6s cubic-bezier(0.16,1,0.3,1)',
+          }}>
+          {/* BG glow */}
+          <div className="absolute top-0 right-0 w-80 h-80 rounded-full pointer-events-none"
+            style={{ background: `radial-gradient(circle,${sports[active].color}1a,transparent 70%)`, filter: 'blur(40px)' }} />
+
+          <div className="relative flex flex-col md:flex-row items-start gap-8">
+            <div className="w-20 h-20 rounded-2xl flex-shrink-0 flex items-center justify-center text-5xl"
+              style={{ background: `${sports[active].color}18`, border: `1px solid ${sports[active].color}33` }}>
+              {sports[active].emoji}
+            </div>
+            <div className="flex-1">
+              <h3 className="font-syne font-800 text-2xl md:text-3xl mb-3" style={{ color: sports[active].color }}>
+                {sports[active].name}
+              </h3>
+              <p className="text-white/60 text-base leading-relaxed mb-5">{sports[active].desc}</p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+                style={{ background: `${sports[active].color}15`, border: `1px solid ${sports[active].color}33` }}>
+                <Flame size={13} style={{ color: sports[active].color }} />
+                <span className="text-sm font-semibold" style={{ color: sports[active].color }}>
+                  {sports[active].stat}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="flex justify-center">
+          <Link href="/sports"
+            className="flex items-center gap-2 px-6 py-3 rounded-full font-syne font-600 text-sm btn-magnetic"
+            style={{ background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.35)', color: '#fb923c' }}>
+            <Trophy size={15} /> Full Sports Hub <ChevronRight size={14} />
           </Link>
         </div>
       </div>

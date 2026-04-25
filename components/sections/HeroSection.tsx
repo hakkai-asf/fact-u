@@ -1,131 +1,157 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowDown, ChevronRight, Trophy, Users, Star } from 'lucide-react';
+import { ArrowDown, ChevronRight, Zap } from 'lucide-react';
+import { universities } from '@/lib/universities';
 
-const stats = [
-  { icon: Trophy, label: 'Universities', value: '8' },
-  { icon: Users, label: 'UAAP Sports', value: '15+' },
-  { icon: Star, label: 'Championships', value: '500+' },
-];
+const WORDS = ['Discover', 'Explore', 'Compare', 'Choose', 'Belong'];
 
 export default function HeroSection() {
-  const [mounted, setMounted] = useState(false);
-  const mouseRef = useRef({ x: 0, y: 0 });
+  const [wordIdx, setWordIdx]   = useState(0);
+  const [visible, setVisible]   = useState(true);
+  const [mounted, setMounted]   = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
+  const parallaxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
-    const handler = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
-      if (heroRef.current) {
-        const rect = heroRef.current.getBoundingClientRect();
-        const cx = (e.clientX - rect.left - rect.width / 2) / rect.width;
-        const cy = (e.clientY - rect.top - rect.height / 2) / rect.height;
-        heroRef.current.style.setProperty('--mx', String(cx * 20));
-        heroRef.current.style.setProperty('--my', String(cy * 20));
-      }
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => { setWordIdx(i => (i + 1) % WORDS.length); setVisible(true); }, 400);
+    }, 2600);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Mouse parallax
+  useEffect(() => {
+    const handle = (e: MouseEvent) => {
+      if (!parallaxRef.current) return;
+      const cx = (e.clientX / window.innerWidth  - 0.5) * 30;
+      const cy = (e.clientY / window.innerHeight - 0.5) * 20;
+      parallaxRef.current.style.transform = `translate(${cx}px, ${cy}px)`;
     };
-    window.addEventListener('mousemove', handler);
-    return () => window.removeEventListener('mousemove', handler);
+    window.addEventListener('mousemove', handle);
+    return () => window.removeEventListener('mousemove', handle);
   }, []);
 
   return (
-    <section
-      ref={heroRef}
-      className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 pb-12 overflow-hidden"
-    >
-      {/* Particle dots */}
-      <div className="absolute inset-0 pointer-events-none">
-        {mounted && Array.from({ length: 20 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              width: Math.random() * 4 + 1,
-              height: Math.random() * 4 + 1,
-              background: `rgba(${Math.random() > 0.5 ? '96,165,250' : '167,139,250'},${Math.random() * 0.5 + 0.2})`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `floatY ${4 + Math.random() * 6}s ease-in-out infinite ${Math.random() * 4}s`,
-            }}
-          />
-        ))}
+    <section ref={heroRef}
+      className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-24 pb-20 overflow-hidden">
+
+      {/* Parallax floating university chips */}
+      <div ref={parallaxRef} className="absolute inset-0 pointer-events-none"
+        style={{ transition: 'transform 0.15s linear', willChange: 'transform' }}>
+        {mounted && universities.map((u, i) => {
+          const positions = [
+            { top: '15%', left: '6%' }, { top: '22%', right: '8%' },
+            { top: '55%', left: '3%' }, { top: '62%', right: '5%' },
+            { top: '78%', left: '12%' }, { top: '80%', right: '10%' },
+            { top: '38%', left: '1%' }, { top: '40%', right: '2%' },
+          ];
+          const p = positions[i] || { top: '50%', left: '50%' };
+          return (
+            <div key={u.slug}
+              className="absolute flex items-center gap-2 px-3 py-1.5 rounded-full glass shimmer"
+              style={{
+                ...p,
+                border: `1px solid ${u.colors.primary}44`,
+                animation: `floatA ${5 + i * 0.7}s ease-in-out infinite ${i * 0.4}s`,
+                boxShadow: `0 0 20px ${u.colors.primary}22`,
+              }}>
+              <div className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold"
+                style={{ background: u.colors.primary }}>{u.shortName.slice(0,1)}</div>
+              <span className="text-[11px] font-syne font-600 text-white/50">{u.shortName}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Glowing ring behind headline */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+        style={{ width: 600, height: 600 }}>
+        <div className="absolute inset-0 rounded-full"
+          style={{ border: '1px solid rgba(79,142,247,0.08)', boxShadow: '0 0 120px rgba(79,142,247,0.08)' }} />
+        <div className="absolute inset-12 rounded-full"
+          style={{ border: '1px solid rgba(167,139,250,0.06)' }} />
+        <div className="absolute inset-24 rounded-full pulse-glow"
+          style={{ border: '1px solid rgba(79,142,247,0.12)' }} />
       </div>
 
       {/* Badge */}
-      <div
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-8 fade-up"
-        style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.3)', color: '#93c5fd' }}
-      >
-        <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-        The Ultimate UAAP University Explorer
-        <ChevronRight size={14} />
+      <div className="anim-fade-up relative z-10">
+        <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full glass-bright mb-8"
+          style={{ border: '1px solid rgba(79,142,247,0.3)', boxShadow: '0 0 30px rgba(79,142,247,0.15)' }}>
+          <div className="w-2 h-2 rounded-full bg-blue-400 dot-pulse" />
+          <span className="text-xs font-syne font-600 tracking-widest text-blue-300 uppercase">
+            UAAP University Explorer
+          </span>
+          <ChevronRight size={13} className="text-blue-400 opacity-70" />
+        </div>
       </div>
 
       {/* Headline */}
-      <h1
-        className="font-syne font-800 leading-[1.02] tracking-tight mb-6 fade-up fade-up-delay-1"
-        style={{ fontSize: 'clamp(2.8rem,7vw,5.5rem)' }}
-      >
-        Find the University<br />
-        <span className="grad-text">That Fits You</span>
-      </h1>
+      <div className="relative z-10 anim-fade-up d1">
+        <div className="font-display tracking-wider text-white/15 text-sm uppercase mb-2 tracking-[0.5em]">
+          Find Your Future
+        </div>
+        <h1 className="font-syne font-800 leading-[0.95] tracking-tight"
+          style={{ fontSize: 'clamp(3.5rem,9vw,8rem)' }}>
+          <span style={{
+            display: 'inline-block', minWidth: '4ch', textAlign: 'center',
+            background: 'linear-gradient(135deg,#4f8ef7,#a78bfa 50%,#38bdf8)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            transition: 'opacity 0.4s, transform 0.4s',
+            opacity: visible ? 1 : 0,
+            transform: visible ? 'translateY(0)' : 'translateY(-16px)',
+          }}>
+            {WORDS[wordIdx]}
+          </span>
+          <br />
+          <span className="text-white">Your University</span>
+        </h1>
+      </div>
 
-      {/* Subtext */}
-      <p
-        className="text-lg text-white/50 max-w-xl leading-relaxed mb-10 fade-up fade-up-delay-2"
-      >
-        Explore all 8 UAAP universities — compare academics, sports legacy,
-        programs, campus life, and tuition in one stunning platform.
+      {/* Sub */}
+      <p className="relative z-10 mt-6 text-lg text-white/40 max-w-lg leading-relaxed anim-fade-up d2">
+        Explore all 8 UAAP universities — academics, sports legacy, campus life,
+        and admissions — in one immersive platform.
       </p>
 
       {/* CTAs */}
-      <div className="flex flex-wrap items-center justify-center gap-4 mb-16 fade-up fade-up-delay-3">
-        <Link
-          href="/universities"
-          className="flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-          style={{
-            background: 'linear-gradient(135deg,#2563eb,#7c3aed)',
-            boxShadow: '0 0 30px rgba(99,102,241,0.35)',
-          }}
-        >
-          Explore Universities
-          <ChevronRight size={16} />
+      <div className="relative z-10 flex flex-wrap items-center justify-center gap-4 mt-10 anim-fade-up d3">
+        <Link href="/universities" className="btn-primary">
+          Explore Universities <ChevronRight size={16} />
         </Link>
-        <Link
-          href="/compare"
-          className="flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm glass glass-hover transition-all duration-300 hover:scale-105"
-          style={{ border: '1px solid rgba(255,255,255,0.15)' }}
-        >
+        <Link href="/compare" className="btn-ghost">
           Compare Schools
         </Link>
       </div>
 
-      {/* Stats row */}
-      <div className="flex flex-wrap justify-center gap-6 fade-up fade-up-delay-4">
-        {stats.map(({ icon: Icon, label, value }) => (
-          <div
-            key={label}
-            className="flex items-center gap-3 px-5 py-3 rounded-2xl glass"
-            style={{ border: '1px solid rgba(255,255,255,0.1)' }}
-          >
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: 'rgba(59,130,246,0.15)' }}>
-              <Icon size={16} className="text-blue-400" />
+      {/* University count strip */}
+      <div className="relative z-10 flex items-center gap-1 mt-14 anim-fade-up d4">
+        <div className="flex -space-x-2">
+          {universities.slice(0,5).map(u => (
+            <div key={u.slug}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold ring-2"
+              style={{ background: `linear-gradient(135deg,${u.colors.primary},${u.colors.secondary})` }}>
+              {u.shortName.slice(0,1)}
             </div>
-            <div className="text-left">
-              <div className="text-lg font-bold leading-tight">{value}</div>
-              <div className="text-xs text-white/40">{label}</div>
-            </div>
+          ))}
+          <div className="w-8 h-8 rounded-full glass flex items-center justify-center text-[9px] text-white/50 font-bold ring-2"
+            style={{ border: '1px solid rgba(255,255,255,0.12)' }}>
+            +3
           </div>
-        ))}
+        </div>
+        <span className="ml-3 text-sm text-white/35">8 member universities · 500+ titles · 85+ years</span>
       </div>
 
-      {/* Scroll cue */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 text-xs">
-        <span>Scroll to explore</span>
-        <ArrowDown size={16} className="animate-bounce" />
+      {/* Scroll indicator */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10">
+        <div className="w-5 h-9 rounded-full glass flex items-start justify-center pt-1.5"
+          style={{ border: '1px solid rgba(255,255,255,0.15)' }}>
+          <div className="w-1 h-2 rounded-full bg-blue-400 scroll-dot" />
+        </div>
+        <span className="text-[10px] text-white/25 tracking-[0.2em] uppercase font-syne">Scroll</span>
       </div>
     </section>
   );
