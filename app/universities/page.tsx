@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { universities } from '@/lib/universities';
-import AnimatedBackground from '@/components/ui/AnimatedBackground';
+import NebulaBackground from '@/components/ui/NebulaBackground';
 import { Search, Trophy, GraduationCap, MapPin, ArrowRight, SlidersHorizontal } from 'lucide-react';
 
 const CAMPUS_GRADIENTS: Record<string, string> = {
@@ -68,7 +68,7 @@ export default function UniversitiesPage() {
 
   return (
     <main className="min-h-screen pt-20 pb-24">
-      <AnimatedBackground
+      <NebulaBackground
         primaryColor={hovered?.colors.primary ?? '#1e3a5f'}
         secondaryColor={hovered?.colors.secondary ?? '#312e81'}
         intensity={0.25}

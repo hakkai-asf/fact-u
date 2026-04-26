@@ -11,6 +11,7 @@ export interface University {
   logo: string;
   campusImage: string;
   heroImage: string;
+  chantUrl: string;
   admissionsUrl: string;
   website: string;
   mapEmbedUrl: string;
@@ -81,9 +82,10 @@ export const universities: University[] = [
     location: 'Diliman, Quezon City',
     type: 'public',
     colors: { primary: '#7B1113', secondary: '#F2A900', accent: '#fff' },
-    logo: '/assets/logos/up-logo.svg',
+    logo: '/assets/logos/up-logo.png',
     campusImage: '/assets/universities/up-campus.jpg',
     heroImage: '/assets/universities/up-hero.jpg',
+    chantUrl: '/assets/audio/chants/up-chant.mp3',
     admissionsUrl: 'https://upd.edu.ph/admissions/',
     website: 'https://up.edu.ph',
     mapEmbedUrl: 'https://maps.google.com/maps?q=University+of+the+Philippines+Diliman&output=embed',
@@ -141,10 +143,10 @@ export const universities: University[] = [
       'UAAP Basketball Champions 2022 & 2023',
     ],
     highlights: [
-      { icon: '🏆', label: 'UAAP Titles', value: '11+' },
-      { icon: '🎓', label: 'QS Rank', value: '801–1000' },
-      { icon: '📚', label: 'Programs', value: '600+' },
-      { icon: '🔬', label: 'Research', value: '#1 PH' },
+      { icon: 'trophy', label: 'UAAP Titles', value: '11+' },
+      { icon: 'grad', label: 'QS Rank', value: '801–1000' },
+      { icon: 'book', label: 'Programs', value: '600+' },
+      { icon: 'research', label: 'Research', value: '#1 PH' },
     ],
     admissions: {
       steps: [
@@ -170,9 +172,10 @@ export const universities: University[] = [
     location: 'Loyola Heights, Quezon City',
     type: 'private',
     colors: { primary: '#003D8F', secondary: '#0070C0', accent: '#FFD700' },
-    logo: '/assets/logos/ateneo-logo.svg',
+    logo: '/assets/logos/ateneo-logo.png',
     campusImage: '/assets/universities/ateneo-campus.jpg',
     heroImage: '/assets/universities/ateneo-hero.jpg',
+    chantUrl: '/assets/audio/chants/ateneo-chant.mp3',
     admissionsUrl: 'https://www.ateneo.edu/admissions',
     website: 'https://www.ateneo.edu',
     mapEmbedUrl: 'https://maps.google.com/maps?q=Ateneo+de+Manila+University&output=embed',
@@ -230,10 +233,10 @@ export const universities: University[] = [
       'Most influential alumni in Philippine politics and business',
     ],
     highlights: [
-      { icon: '🦅', label: 'Basketball Titles', value: '12' },
-      { icon: '🎓', label: 'QS Rank', value: '801–1000' },
-      { icon: '⚖️', label: 'Bar Topnotchers', value: 'Multiple' },
-      { icon: '🌏', label: 'Global Partners', value: '100+' },
+      { icon: 'eagle', label: 'Basketball Titles', value: '12' },
+      { icon: 'grad', label: 'QS Rank', value: '801–1000' },
+      { icon: 'law', label: 'Bar Topnotchers', value: 'Multiple' },
+      { icon: 'globe', label: 'Global Partners', value: '100+' },
     ],
     admissions: {
       steps: [
@@ -259,9 +262,10 @@ export const universities: University[] = [
     location: 'Taft Avenue, Manila',
     type: 'private',
     colors: { primary: '#006B3F', secondary: '#007A47', accent: '#FFFFFF' },
-    logo: '/assets/logos/dlsu-logo.svg',
+    logo: '/assets/logos/dlsu-logo.png',
     campusImage: '/assets/universities/dlsu-campus.jpg',
     heroImage: '/assets/universities/dlsu-hero.jpg',
+    chantUrl: '/assets/audio/chants/dlsu-chant.mp3',
     admissionsUrl: 'https://www.dlsu.edu.ph/admissions/',
     website: 'https://www.dlsu.edu.ph',
     mapEmbedUrl: 'https://maps.google.com/maps?q=De+La+Salle+University+Manila&output=embed',
@@ -319,10 +323,10 @@ export const universities: University[] = [
       'Multiple engineering board exam topnotchers',
     ],
     highlights: [
-      { icon: '🏹', label: 'Basketball Titles', value: '20' },
-      { icon: '🎓', label: 'QS Rank', value: '801–1000' },
-      { icon: '⚙️', label: 'Engineering', value: 'Top PH' },
-      { icon: '💼', label: 'Employability', value: 'Top 3 PH' },
+      { icon: 'archer', label: 'Basketball Titles', value: '20' },
+      { icon: 'grad', label: 'QS Rank', value: '801–1000' },
+      { icon: 'gear', label: 'Engineering', value: 'Top PH' },
+      { icon: 'work', label: 'Employability', value: 'Top 3 PH' },
     ],
     admissions: {
       steps: [
@@ -348,9 +352,10 @@ export const universities: University[] = [
     location: 'España Boulevard, Manila',
     type: 'private',
     colors: { primary: '#F5C518', secondary: '#1A1A1A', accent: '#8B0000' },
-    logo: '/assets/logos/ust-logo.svg',
+    logo: '/assets/logos/ust-logo.png',
     campusImage: '/assets/universities/ust-campus.jpg',
     heroImage: '/assets/universities/ust-hero.jpg',
+    chantUrl: '/assets/audio/chants/ust-chant.mp3',
     admissionsUrl: 'https://www.ust.edu.ph/admissions/',
     website: 'https://www.ust.edu.ph',
     mapEmbedUrl: 'https://maps.google.com/maps?q=University+of+Santo+Tomas+Manila&output=embed',
@@ -409,10 +414,10 @@ export const universities: University[] = [
       'QS World University Rankings 1001–1200',
     ],
     highlights: [
-      { icon: '🐯', label: 'Cheerdance Titles', value: '13' },
-      { icon: '🏛️', label: 'Established', value: '1611' },
-      { icon: '⚕️', label: 'Medicine', value: 'Top PH' },
-      { icon: '🌟', label: 'Total Titles', value: '40+' },
+      { icon: 'tiger', label: 'Cheerdance Titles', value: '13' },
+      { icon: 'building', label: 'Established', value: '1611' },
+      { icon: 'health', label: 'Medicine', value: 'Top PH' },
+      { icon: 'star', label: 'Total Titles', value: '40+' },
     ],
     admissions: {
       steps: [
@@ -438,9 +443,10 @@ export const universities: University[] = [
     location: 'M.F. Jhocson Street, Manila',
     type: 'private',
     colors: { primary: '#003087', secondary: '#FFD700', accent: '#FFFFFF' },
-    logo: '/assets/logos/nu-logo.svg',
+    logo: '/assets/logos/nu-logo.png',
     campusImage: '/assets/universities/nu-campus.jpg',
     heroImage: '/assets/universities/nu-hero.jpg',
+    chantUrl: '/assets/audio/chants/nu-chant.mp3',
     admissionsUrl: 'https://www.national-u.edu.ph/admissions/',
     website: 'https://www.national-u.edu.ph',
     mapEmbedUrl: 'https://maps.google.com/maps?q=National+University+Manila&output=embed',
@@ -498,10 +504,10 @@ export const universities: University[] = [
       'Multiple UAAP best player awards in volleyball',
     ],
     highlights: [
-      { icon: '🏐', label: 'Volleyball Titles', value: '9' },
-      { icon: '🏅', label: 'Total UAAP Titles', value: '15' },
-      { icon: '🏟️', label: 'Facilities', value: 'World-class' },
-      { icon: '⚡', label: 'Volleyball', value: 'Dynasty' },
+      { icon: 'vball', label: 'Volleyball Titles', value: '9' },
+      { icon: 'medal', label: 'Total UAAP Titles', value: '15' },
+      { icon: 'stadium', label: 'Facilities', value: 'World-class' },
+      { icon: 'bolt', label: 'Volleyball', value: 'Dynasty' },
     ],
     admissions: {
       steps: [
@@ -527,9 +533,10 @@ export const universities: University[] = [
     location: 'Nicanor Reyes Street, Manila',
     type: 'private',
     colors: { primary: '#006B3F', secondary: '#FFD700', accent: '#FFFFFF' },
-    logo: '/assets/logos/feu-logo.svg',
+    logo: '/assets/logos/feu-logo.png',
     campusImage: '/assets/universities/feu-campus.jpg',
     heroImage: '/assets/universities/feu-hero.jpg',
+    chantUrl: '/assets/audio/chants/feu-chant.mp3',
     admissionsUrl: 'https://www.feu.edu.ph/admissions/',
     website: 'https://www.feu.edu.ph',
     mapEmbedUrl: 'https://maps.google.com/maps?q=Far+Eastern+University+Manila&output=embed',
@@ -587,10 +594,10 @@ export const universities: University[] = [
       'PACUCOA-accredited programs',
     ],
     highlights: [
-      { icon: '🦬', label: 'Basketball Titles', value: '7' },
-      { icon: '📊', label: 'Accountancy', value: 'Top PH' },
-      { icon: '🏛️', label: 'Established', value: '1928' },
-      { icon: '🌿', label: 'Total Titles', value: '16+' },
+      { icon: 'tamaraw', label: 'Basketball Titles', value: '7' },
+      { icon: 'chart', label: 'Accountancy', value: 'Top PH' },
+      { icon: 'building', label: 'Established', value: '1928' },
+      { icon: 'green', label: 'Total Titles', value: '16+' },
     ],
     admissions: {
       steps: [
@@ -616,9 +623,10 @@ export const universities: University[] = [
     location: 'San Marcelino Street, Manila',
     type: 'private',
     colors: { primary: '#003DA5', secondary: '#FFD700', accent: '#FFFFFF' },
-    logo: '/assets/logos/adamson-logo.svg',
+    logo: '/assets/logos/adamson-logo.png',
     campusImage: '/assets/universities/adamson-campus.jpg',
     heroImage: '/assets/universities/adamson-hero.jpg',
+    chantUrl: '/assets/audio/chants/adamson-chant.mp3',
     admissionsUrl: 'https://www.adamson.edu.ph/admissions',
     website: 'https://www.adamson.edu.ph',
     mapEmbedUrl: 'https://maps.google.com/maps?q=Adamson+University+Manila&output=embed',
@@ -675,10 +683,10 @@ export const universities: University[] = [
       'Vincentian service tradition since 1932',
     ],
     highlights: [
-      { icon: '🦅', label: 'UAAP Titles', value: '5+' },
-      { icon: '⚙️', label: 'Engineering', value: 'Strong' },
-      { icon: '🏛️', label: 'Established', value: '1932' },
-      { icon: '⚖️', label: 'Law', value: 'Respected' },
+      { icon: 'eagle', label: 'UAAP Titles', value: '5+' },
+      { icon: 'gear', label: 'Engineering', value: 'Strong' },
+      { icon: 'building', label: 'Established', value: '1932' },
+      { icon: 'law', label: 'Law', value: 'Respected' },
     ],
     admissions: {
       steps: [
@@ -704,9 +712,10 @@ export const universities: University[] = [
     location: 'Claro M. Recto Avenue, Manila',
     type: 'private',
     colors: { primary: '#CC0000', secondary: '#FFD700', accent: '#FFFFFF' },
-    logo: '/assets/logos/ue-logo.svg',
+    logo: '/assets/logos/ue-logo.png',
     campusImage: '/assets/universities/ue-campus.jpg',
     heroImage: '/assets/universities/ue-hero.jpg',
+    chantUrl: '/assets/audio/chants/ue-chant.mp3',
     admissionsUrl: 'https://www.ue.edu.ph/manila/admissions/',
     website: 'https://www.ue.edu.ph',
     mapEmbedUrl: 'https://maps.google.com/maps?q=University+of+the+East+Manila&output=embed',
@@ -763,10 +772,10 @@ export const universities: University[] = [
       'Rich cultural and academic heritage since 1946',
     ],
     highlights: [
-      { icon: '⚔️', label: 'Basketball Titles', value: '18' },
-      { icon: '🦷', label: 'Dentistry', value: 'Top PH' },
-      { icon: '🏛️', label: 'Established', value: '1946' },
-      { icon: '🌟', label: 'Total Titles', value: '22+' },
+      { icon: 'warrior', label: 'Basketball Titles', value: '18' },
+      { icon: 'dental', label: 'Dentistry', value: 'Top PH' },
+      { icon: 'building', label: 'Established', value: '1946' },
+      { icon: 'star', label: 'Total Titles', value: '22+' },
     ],
     admissions: {
       steps: [

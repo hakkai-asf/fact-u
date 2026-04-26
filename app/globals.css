@@ -151,13 +151,8 @@ h1,h2,h3,h4,h5,h6 { color: var(--text); }
 @keyframes scrollDot { 0%{transform:translateY(0);opacity:1} 100%{transform:translateY(14px);opacity:0} }
 .scroll-dot { animation: scrollDot 1.8s ease-in-out infinite; }
 
-/* ── Mesh bg ───────────────────────────────── */
-@keyframes meshShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
-.mesh-bg {
-  background: linear-gradient(-45deg,#03050d,#060818,#080420,#040c1a,#03050d);
-  background-size: 400% 400%;
-  animation: meshShift 20s ease infinite;
-}
+/* mesh-bg removed - nebula canvas background used instead */
+.mesh-bg { background: #03050d; }
 
 /* ── Grid overlay ──────────────────────────── */
 .grid-overlay {

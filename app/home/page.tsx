@@ -1,4 +1,4 @@
-import AnimatedBackground from '@/components/ui/AnimatedBackground';
+import NebulaBackground from '@/components/ui/NebulaBackground';
 import ParticleField from '@/components/ui/ParticleField';
 import HeroSection from '@/components/sections/HeroSection';
 import UniversityCarousel from '@/components/sections/UniversityCarousel';
@@ -10,7 +10,7 @@ import { universities } from '@/lib/universities';
 export default function HomePage() {
   return (
     <main className="relative">
-      <AnimatedBackground primaryColor="#1e3a8a" secondaryColor="#4c1d95" intensity={0.32} />
+      <NebulaBackground primaryColor="#1e3a8a" secondaryColor="#4c1d95" intensity={0.32} />
       <ParticleField count={45} />
 
       <HeroSection />

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { universities } from '@/lib/universities';
-import AnimatedBackground from '@/components/ui/AnimatedBackground';
+import NebulaBackground from '@/components/ui/NebulaBackground';
 import { BarChart2, ChevronDown, Trophy, GraduationCap, Users, Star, ExternalLink, ArrowRight, Zap } from 'lucide-react';
 import Link from 'next/link';
 
@@ -61,7 +61,7 @@ export default function ComparePage() {
 
   return (
     <main className="min-h-screen pt-24 pb-24 px-6">
-      <AnimatedBackground primaryColor={left.colors.primary} secondaryColor={right.colors.primary} intensity={0.22} />
+      <NebulaBackground primaryColor={left.colors.primary} secondaryColor={right.colors.primary} intensity={0.22} />
 
       <div className="max-w-6xl mx-auto">
 

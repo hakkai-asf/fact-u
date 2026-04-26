@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { universities } from '@/lib/universities';
-import AnimatedBackground from '@/components/ui/AnimatedBackground';
+import NebulaBackground from '@/components/ui/NebulaBackground';
 import ScoreBar from '@/components/ui/ScoreBar';
 import { GraduationCap, BookOpen, Star, ArrowRight, Trophy, Zap, TrendingUp } from 'lucide-react';
 
@@ -21,7 +21,7 @@ export default function AcademicsPage() {
 
   return (
     <main className="min-h-screen pt-24 pb-24 px-6">
-      <AnimatedBackground primaryColor="#1e3a5f" secondaryColor="#3b0764" intensity={0.28} />
+      <NebulaBackground primaryColor="#1e3a5f" secondaryColor="#3b0764" intensity={0.28} />
 
       <div className="max-w-7xl mx-auto">
 

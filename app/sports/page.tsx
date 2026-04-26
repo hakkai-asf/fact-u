@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { universities } from '@/lib/universities';
-import AnimatedBackground from '@/components/ui/AnimatedBackground';
+import NebulaBackground from '@/components/ui/NebulaBackground';
 import { Trophy, Flame, Star, ArrowRight, Zap } from 'lucide-react';
 
 const SPORTS = [
@@ -86,7 +86,7 @@ export default function SportsPage() {
 
   return (
     <main className="min-h-screen pt-20 sm:pt-24 pb-8">
-      <AnimatedBackground primaryColor={sport.bg} secondaryColor="#1c1917" intensity={0.32} />
+      <NebulaBackground primaryColor={sport.bg} secondaryColor="#1c1917" intensity={0.32} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header */}
