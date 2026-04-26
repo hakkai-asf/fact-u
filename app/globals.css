@@ -12,9 +12,9 @@
   --glass-md:         rgba(255,255,255,0.08);
   --glass-border:     rgba(255,255,255,0.10);
   --glass-border-hi:  rgba(255,255,255,0.20);
-  --text:             #e8eeff;
-  --text-dim:         rgba(220,228,255,0.65);  /* increased from 0.55 */
-  --text-muted:       rgba(200,215,255,0.40);  /* increased from 0.28 */
+  --text:             #f0f4ff;
+  --text-dim:         rgba(220,230,255,0.78);
+  --text-muted:       rgba(200,215,255,0.55);
   --accent:           #4f8ef7;
   --accent2:          #a78bfa;
   --ease-spring:      cubic-bezier(0.34,1.56,0.64,1);
@@ -96,11 +96,13 @@ body {
 /* Readable body text */
 p, li, span, label { color: var(--text-dim); }
 h1,h2,h3,h4,h5,h6 { color: var(--text); }
+/* Ensure descriptions and supporting text are clearly legible */
+.text-readable { color: rgba(220,230,255,0.82) !important; }
 
-/* ── Gradient text ─────────────────────────── */
-.grad      { background: linear-gradient(135deg,#4f8ef7,#a78bfa 50%,#38bdf8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.grad-warm { background: linear-gradient(135deg,#f97316,#f43f5e,#a855f7);    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.grad-gold { background: linear-gradient(135deg,#fbbf24,#f59e0b,#d97706);    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+/* ── Gradient text — bright, vivid ─────────── */
+.grad      { background: linear-gradient(135deg,#60a5fa,#c084fc 45%,#67e8f9); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter: brightness(1.15); }
+.grad-warm { background: linear-gradient(135deg,#fb923c,#f43f5e 45%,#c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter: brightness(1.15); }
+.grad-gold { background: linear-gradient(135deg,#fcd34d,#fbbf24 45%,#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter: brightness(1.1); }
 
 /* ── Glow ──────────────────────────────────── */
 .glow-blue   { box-shadow: 0 0 40px rgba(79,142,247,0.25), 0 0 80px rgba(79,142,247,0.08); }
@@ -205,7 +207,7 @@ h1,h2,h3,h4,h5,h6 { color: var(--text); }
   display: inline-flex; align-items: center; gap: .5rem;
   padding: .85rem 1.8rem; border-radius: 100px;
   font-family: 'Syne', sans-serif; font-weight: 600; font-size: .88rem;
-  color: rgba(220,228,255,.85); background: var(--glass);
+  color: rgba(230,238,255,.95); background: var(--glass);
   border: 1px solid var(--glass-border-hi);
   transition: all .3s var(--ease-spring); backdrop-filter: blur(16px);
   -webkit-tap-highlight-color: transparent;

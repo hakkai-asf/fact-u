@@ -5,6 +5,7 @@ import { University } from '@/lib/universities';
 import NebulaBackground from '@/components/ui/NebulaBackground';
 import ScoreBar from '@/components/ui/ScoreBar';
 import HighlightIcon from '@/components/ui/HighlightIcon';
+import UnivLogo from '@/components/ui/UnivLogo';
 import {
   MapPin, Trophy, GraduationCap, Star, Users, ArrowLeft,
   ExternalLink, CheckCircle, BarChart2, Flame, BookOpen,
@@ -55,35 +56,31 @@ export default function UniversityClient({ university: u }: { university: Univer
 
               {/* Logo + info */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-7">
-                {/* University logo placeholder */}
+                {/* University logo — real PNG with fallback */}
                 <div className="relative flex-shrink-0">
-                  {/* Try real logo first */}
-                  <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl sm:rounded-3xl overflow-hidden relative"
-                    style={{
-                      background: `linear-gradient(135deg,${u.colors.primary}cc,${u.colors.secondary}aa)`,
-                      border: `1.5px solid ${u.colors.primary}66`,
-                      boxShadow: `0 0 50px ${u.colors.primary}55, inset 0 1px 0 rgba(255,255,255,0.18)`,
-                    }}>
-                    {/* Real logo if available */}
-                    <img
-                      src={`/assets/logos/${u.slug}-logo.svg`}
-                      alt={`${u.shortName} logo`}
-                      className="w-full h-full object-contain p-3"
-                      onError={e => {
-                        (e.currentTarget as HTMLImageElement).style.display = 'none';
-                        const fb = (e.currentTarget as HTMLImageElement).nextElementSibling as HTMLElement;
-                        if (fb) fb.style.display = 'flex';
-                      }}
-                    />
-                    {/* Fallback text logo */}
-                    <div className="absolute inset-0 items-center justify-center font-syne font-extrabold text-white"
-                      style={{ display: 'none', fontSize: 'clamp(1rem,3vw,1.6rem)' }}>
-                      {u.shortName}
-                    </div>
-                  </div>
-                  {/* Glow ring */}
-                  <div className="absolute inset-0 rounded-2xl sm:rounded-3xl pulse-glow pointer-events-none"
-                    style={{ border: `1px solid ${u.colors.primary}40` }} />
+                  {/* Mobile: 80px, Desktop: 120px */}
+                  <UnivLogo
+                    slug={u.slug}
+                    name={u.shortName}
+                    color={u.colors.primary}
+                    size={120}
+                    rounded="3xl"
+                    glow
+                    className="hidden sm:flex"
+                    style={{ boxShadow: `0 0 50px ${u.colors.primary}55`, border: `1.5px solid ${u.colors.primary}66` }}
+                  />
+                  <UnivLogo
+                    slug={u.slug}
+                    name={u.shortName}
+                    color={u.colors.primary}
+                    size={80}
+                    rounded="2xl"
+                    glow
+                    className="flex sm:hidden"
+                    style={{ boxShadow: `0 0 30px ${u.colors.primary}55`, border: `1.5px solid ${u.colors.primary}66` }}
+                  />
+                  <div className="absolute inset-0 rounded-3xl pulse-glow pointer-events-none"
+                    style={{ border: `1px solid ${u.colors.primary}38` }} />
                 </div>
 
                 <div>
@@ -464,9 +461,8 @@ export default function UniversityClient({ university: u }: { university: Univer
             style={{ border: `1.5px solid ${u.colors.primary}55`, boxShadow: `0 0 70px ${u.colors.primary}40` }}
             onClick={e => e.stopPropagation()}>
             <div className="text-center mb-7">
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center font-syne font-extrabold text-xl mx-auto mb-4"
-                style={{ background: `${u.colors.primary}30`, border: `1.5px solid ${u.colors.primary}55` }}>
-                {u.shortName}
+              <div className="flex justify-center mb-4">
+                <UnivLogo slug={u.slug} name={u.shortName} color={u.colors.primary} size={56} rounded="2xl" glow />
               </div>
               <h3 className="font-syne font-bold text-xl mb-1" style={{ color: '#e8eeff' }}>{u.name}</h3>
               <p className="text-sm" style={{ color: 'rgba(220,228,255,0.45)' }}>Ready to take the next step?</p>

@@ -5,6 +5,8 @@ import {
   ChevronRight, Zap, Trophy, GraduationCap, BarChart2, Star,
   Globe, Users, BookOpen, Layers, Search, Award,
 } from 'lucide-react';
+import UnivLogo from '@/components/ui/UnivLogo';
+import { universities as univData } from '@/lib/universities';
 
 const UNI = [
   { name:'UP',    color:'#7B1113' },
@@ -170,7 +172,7 @@ export default function LandingPage() {
                     animation:`floatA ${5.5+i*.65}s ease-in-out infinite ${i*.3}s`,
                     transform:`translate(${(mx-.5)*-18*depth}px,${(my-.5)*-11*depth}px)`,
                     transition:'transform .55s cubic-bezier(.16,1,.3,1)', zIndex:3 }}>
-                  <div className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold" style={{background:u.color,color:'#fff'}}>{u.name.slice(0,1)}</div>
+                  <img src={`/assets/logos/${univData.find(x=>x.shortName===u.name||x.slug===u.name.toLowerCase())?.slug??u.name.toLowerCase()}-logo.png`} alt={u.name} className="w-4 h-4 rounded object-contain" style={{background:u.color,padding:1}} onError={e=>{(e.currentTarget as HTMLImageElement).style.display='none';}} />
                   <span className="text-[11px] font-syne font-semibold" style={{color:'rgba(220,228,255,0.52)'}}>{u.name}</span>
                 </div>
               );
@@ -245,7 +247,7 @@ export default function LandingPage() {
                   {UNI.slice(0,6).map((u,i)=>(
                     <div key={u.name} className="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-syne font-extrabold"
                       style={{background:`linear-gradient(135deg,${u.color},${u.color}88)`,border:'2px solid rgba(3,5,13,.85)',color:'#fff',zIndex:6-i}}>
-                      {u.name.slice(0,1)}
+                      <img src={`/assets/logos/${univData.find(x=>x.shortName===u.name)?.slug??u.name.toLowerCase()}-logo.png`} alt={u.name} className="w-full h-full object-contain p-0.5" onError={e=>{(e.currentTarget as HTMLImageElement).style.display='none';(e.currentTarget.parentElement as HTMLElement).textContent=u.name.slice(0,1);}} />
                     </div>
                   ))}
                   <div className="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-bold"
@@ -362,9 +364,23 @@ export default function LandingPage() {
                 <div className="absolute top-0 left-0 right-0 h-0.5" style={{background:`linear-gradient(90deg,transparent,${u.color},transparent)`}} />
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
                   style={{background:`radial-gradient(circle at top,${u.color}14,transparent 70%)`}} />
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center font-syne font-extrabold text-xs sm:text-sm mb-2 sm:mb-3"
-                  style={{background:`${u.color}20`,color:u.color,border:`1px solid ${u.color}35`}}>
-                  {u.name}
+                <div className="mb-2 sm:mb-3">
+                  <img
+                    src={`/assets/logos/${univData.find(x=>x.shortName===u.name)?.slug??u.name.toLowerCase()}-logo.png`}
+                    alt={u.name}
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl object-contain"
+                    style={{background:`${u.color}20`,padding:4,border:`1px solid ${u.color}35`}}
+                    onError={e=>{
+                      const el=e.currentTarget as HTMLImageElement;
+                      el.style.display='none';
+                      const fb=el.nextElementSibling as HTMLElement;
+                      if(fb)fb.style.display='flex';
+                    }}
+                  />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl items-center justify-center font-syne font-extrabold text-xs sm:text-sm"
+                    style={{display:'none',background:`${u.color}20`,color:u.color,border:`1px solid ${u.color}35`}}>
+                    {u.name.slice(0,2)}
+                  </div>
                 </div>
                 <div className="text-xs sm:text-sm font-syne font-bold" style={{color:'rgba(220,228,255,0.68)'}}>Inside FACT-U</div>
               </div>

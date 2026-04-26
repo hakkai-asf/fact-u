@@ -440,7 +440,7 @@ export const universities: University[] = [
     description:
       'NU has transformed into one of the UAAP\'s most dominant programs, particularly in Women\'s Volleyball where the Lady Bulldogs have achieved historic back-to-back-to-back championships.',
     founded: '1900',
-    location: 'M.F. Jhocson Street, Manila',
+    location: 'M.F. Jhocson St., Sampaloc, Manila',
     type: 'private',
     colors: { primary: '#003087', secondary: '#FFD700', accent: '#FFFFFF' },
     logo: '/assets/logos/nu-logo.png',
