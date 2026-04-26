@@ -53,8 +53,7 @@ export default function UniversityCarousel() {
     audio.volume = 0.42;
     audio.play().catch(() => {}); // user may not have interacted yet
     audioRef.current = audio;
-    // Auto stop after 6s
-    setTimeout(() => { if (audioRef.current === audio) { audio.pause(); } }, 6000);
+    // Let the chant play to completion — no forced stop
   }, [muted]);
 
   // Spring loop
