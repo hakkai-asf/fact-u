@@ -1,13 +1,23 @@
+/**
+ * app/page.tsx — FACT-U Landing Page
+ * MODIFIED: Cinematic scroll-based entry experience
+ * Scene 1: Hero (FACT-U identity + nebula atmosphere)
+ * Scene 2: Featured Story Feed (curated, data-driven, immersive)
+ * Scene 3: Transition Gate (enter experience)
+ * Kept: all existing logic (router, particles, enter flow, footer, page transition overlay)
+ * Added: Story Feed scene between hero and features, scroll reveal improvements
+ */
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ChevronRight, Zap, Trophy, GraduationCap, BarChart2, Star,
-  Globe, Users, BookOpen, Layers, Search, Award,
+  Globe, Users, BookOpen, Layers, Search, Award, ArrowRight, ExternalLink,
 } from 'lucide-react';
 import UnivLogo from '@/components/ui/UnivLogo';
 import { universities as univData } from '@/lib/universities';
 
+// DO NOT TOUCH — existing constants
 const UNI = [
   { name:'UP',    color:'#7B1113' },
   { name:'ADMU',  color:'#003D8F' },
@@ -20,6 +30,48 @@ const UNI = [
 ];
 const WORDS = ['Discover','Explore','Compare','Choose','Belong'];
 
+// ADDED: Featured story data — edit this array to update stories without code changes
+// Each story: title, category, description, image (place in /public/assets/stories/), link (optional)
+const FEATURED_STORIES = [
+  {
+    id: 'season-2026',
+    category: 'Season Highlights',
+    title: 'UAAP Season 2026 is Here',
+    description: 'Eight universities. One championship. The most anticipated college sports season in the Philippines tips off with renewed rivalries and emerging dynasties.',
+    image: '/assets/stories/season-2026.jpg',
+    accentColor: '#4f8ef7',
+    link: null,
+  },
+  {
+    id: 'volleyball-dynasty',
+    category: 'Volleyball',
+    title: 'NU Lady Bulldogs: A Dynasty Redefined',
+    description: 'Four consecutive championships. A new generation of stars. National University\'s volleyball program has reshaped what dominance looks like in the UAAP.',
+    image: '/assets/stories/nu-volleyball.jpg',
+    accentColor: '#003087',
+    link: null,
+  },
+  {
+    id: 'cheerdance-2025',
+    category: 'Cheerdance',
+    title: 'UST Pep Squad: 13 and Counting',
+    description: 'The most decorated cheerdance program in UAAP history continues to push the limits of athleticism, artistry, and school spirit.',
+    image: '/assets/stories/ust-cheerdance.jpg',
+    accentColor: '#C8A400',
+    link: null,
+  },
+  {
+    id: 'basketball-preview',
+    category: 'Basketball',
+    title: 'The Basketball Throne: Who Takes It?',
+    description: 'DLSU, Ateneo, UP — three programs with championship hunger. Season 2026 basketball promises to be the most competitive in recent memory.',
+    image: '/assets/stories/basketball-preview.jpg',
+    accentColor: '#f97316',
+    link: null,
+  },
+];
+
+// DO NOT TOUCH — existing particle system
 function LandingParticles() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -62,6 +114,7 @@ function LandingParticles() {
   return <canvas ref={ref} className="fixed inset-0 pointer-events-none" style={{zIndex:1,opacity:.55}} aria-hidden />;
 }
 
+// DO NOT TOUCH — existing reveal hook
 function useReveal(threshold=.1){
   const ref=useRef<HTMLDivElement>(null);
   const [on,setOn]=useState(false);
@@ -73,7 +126,92 @@ function useReveal(threshold=.1){
   return{ref,on};
 }
 
+// ADDED: Story card component — cinematic hover, image fallback
+function StoryCard({ story, index }: { story: typeof FEATURED_STORIES[0]; index: number }) {
+  const { ref, on } = useReveal(0.08);
+  const [imgFailed, setImgFailed] = useState(false);
+
+  return (
+    <div
+      ref={ref}
+      className="group relative overflow-hidden rounded-2xl cursor-pointer"
+      style={{
+        opacity:    on ? 1 : 0,
+        transform:  on ? 'translateY(0) scale(1)' : 'translateY(40px) scale(0.97)',
+        transition: `opacity 0.7s ${index * 0.12}s cubic-bezier(0.16,1,0.3,1), transform 0.7s ${index * 0.12}s cubic-bezier(0.16,1,0.3,1)`,
+        background: 'rgba(6,10,24,0.8)',
+        border:     `1px solid ${story.accentColor}28`,
+        // Lift on hover via CSS — GPU-safe transform only
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px) scale(1.01)';
+        (e.currentTarget as HTMLElement).style.boxShadow = `0 20px 60px rgba(0,0,0,0.5), 0 0 40px ${story.accentColor}25`;
+        (e.currentTarget as HTMLElement).style.borderColor = `${story.accentColor}55`;
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(0) scale(1)';
+        (e.currentTarget as HTMLElement).style.boxShadow = '';
+        (e.currentTarget as HTMLElement).style.borderColor = `${story.accentColor}28`;
+      }}
+    >
+      {/* Image area */}
+      <div className="relative overflow-hidden" style={{ height: 200 }}>
+        {/* Gradient fallback — always visible behind image */}
+        <div className="absolute inset-0"
+          style={{ background: `linear-gradient(135deg, ${story.accentColor}40 0%, rgba(3,5,13,0.9) 100%)` }} />
+
+        {/* Story image — lazy loaded */}
+        {!imgFailed && (
+          <img
+            src={story.image}
+            alt={story.title}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            style={{ opacity: 0.65 }}
+            loading="lazy"
+            onError={() => setImgFailed(true)}
+          />
+        )}
+
+        {/* Overlay gradient */}
+        <div className="absolute inset-0"
+          style={{ background: 'linear-gradient(180deg, transparent 30%, rgba(3,5,13,0.95) 100%)' }} />
+
+        {/* Category badge */}
+        <div className="absolute top-3 left-3">
+          <span className="px-2.5 py-1 rounded-full text-[10px] font-syne font-bold uppercase tracking-wider"
+            style={{ background: `${story.accentColor}22`, border: `1px solid ${story.accentColor}55`, color: story.accentColor, backdropFilter: 'blur(8px)' }}>
+            {story.category}
+          </span>
+        </div>
+      </div>
+
+      {/* Text content */}
+      <div className="p-5">
+        <h3 className="font-syne font-extrabold text-base sm:text-lg leading-tight mb-2 text-white">
+          {story.title}
+        </h3>
+        <p className="text-sm leading-relaxed mb-4" style={{ color: 'rgba(220,228,255,0.62)' }}>
+          {story.description}
+        </p>
+        <div className="flex items-center gap-2 text-xs font-syne font-semibold transition-all duration-300 group-hover:gap-3"
+          style={{ color: story.accentColor }}>
+          {story.link ? (
+            <a href={story.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">
+              Read more <ExternalLink size={11} />
+            </a>
+          ) : (
+            <span className="flex items-center gap-1.5">
+              View story <ArrowRight size={11} className="transition-transform duration-300 group-hover:translate-x-1" />
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function LandingPage() {
+  // DO NOT TOUCH — existing state
   const router = useRouter();
   const [loaded,   setLoaded]   = useState(false);
   const [wordIdx,  setWordIdx]  = useState(0);
@@ -83,6 +221,7 @@ export default function LandingPage() {
   const [mx, setMx] = useState(.5);
   const [my, setMy] = useState(.5);
 
+  // DO NOT TOUCH — existing effects
   useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
   useEffect(() => {
     const t = setInterval(() => {
@@ -104,18 +243,21 @@ export default function LandingPage() {
     setTimeout(() => { setEntered(true); setTimeout(() => router.push('/home'), 600); }, 120);
   }, [entering, router]);
 
-  const stats   = useReveal();
-  const features= useReveal();
-  const unis    = useReveal();
-  const final   = useReveal();
+  // DO NOT TOUCH — existing reveal hooks
+  const stats    = useReveal();
+  const features = useReveal();
+  const unis     = useReveal();
+  const final    = useReveal();
+  // ADDED
+  const storiesReveal = useReveal(0.05);
 
+  // DO NOT TOUCH — existing data
   const statData = [
     { icon: GraduationCap, label: 'Universities',   value: '8',    color: '#4f8ef7' },
     { icon: Trophy,        label: 'UAAP Titles',    value: '500+', color: '#f97316' },
     { icon: Star,          label: 'Years of Sport', value: '85+',  color: '#a78bfa' },
     { icon: BarChart2,     label: 'Programs',       value: '600+', color: '#34d399' },
   ];
-
   const featureData = [
     { icon: Layers,        title: 'University Profiles',    desc: 'Full academic, sports, student life, and admissions details for every UAAP school.' },
     { icon: BarChart2,     title: 'Side-by-Side Compare',   desc: 'Animated bar charts compare academics, sports, tuition, and culture at a glance.' },
@@ -129,18 +271,18 @@ export default function LandingPage() {
     <div className="relative min-h-screen overflow-x-hidden" style={{ background: '#03050d' }}>
       <LandingParticles />
 
-      {/* ADDED: Real nebula image — deepest layer */}
+      {/* ADDED: Real nebula image — deepest layer, very subtle */}
       <div className="fixed inset-0 pointer-events-none" style={{
         zIndex: -1,
         backgroundImage: 'url(/assets/backgrounds/nebula-bg.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
-        opacity: 0.42,
+        opacity: 0.28,
         animation: 'nebulaBreath 30s ease-in-out infinite',
       }} aria-hidden="true" />
 
-      {/* BG orbs */}
+      {/* DO NOT TOUCH — existing BG orbs */}
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
         <div className="absolute inset-0 grid-overlay" />
         <div className="absolute rounded-full float-a"
@@ -161,10 +303,12 @@ export default function LandingPage() {
           style={{ background:'radial-gradient(ellipse 85% 85% at 50% 50%,transparent 35%,#03050d 100%)' }} />
       </div>
 
-      {/* ═══ HERO ═══════════════════════════════ */}
+      {/* ═══════════════════════════════════════
+          SCENE 1: HERO — DO NOT TOUCH (existing)
+      ═══════════════════════════════════════ */}
       <section className="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-8 pb-16">
 
-        {/* Floating chips desktop */}
+        {/* DO NOT TOUCH — floating chips */}
         {loaded && (
           <div className="hidden lg:block">
             {UNI.map((u, i) => {
@@ -191,14 +335,14 @@ export default function LandingPage() {
           </div>
         )}
 
-        {/* Rings */}
+        {/* DO NOT TOUCH — rings */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none hidden sm:block" style={{width:680,height:680}}>
           {[0,70,140,210].map((inset,i)=>(
             <div key={i} className="absolute rounded-full" style={{inset,border:`1px solid rgba(79,142,247,${.07-i*.014})`,animation:`softPulse ${5+i*2}s ease-in-out infinite ${i*.9}s`}} />
           ))}
         </div>
 
-        {/* Badge */}
+        {/* DO NOT TOUCH — badge */}
         <div style={{opacity:loaded?1:0,transform:loaded?'translateY(0)':'translateY(22px)',transition:'opacity .9s,transform .9s cubic-bezier(.16,1,.3,1)'}}>
           <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-8 sm:mb-10"
             style={{background:'rgba(79,142,247,.07)',border:'1px solid rgba(79,142,247,.25)',backdropFilter:'blur(20px)',boxShadow:'0 0 28px rgba(79,142,247,.09)'}}>
@@ -208,7 +352,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Wordmark */}
+        {/* DO NOT TOUCH — wordmark */}
         <div style={{opacity:loaded?1:0,transform:loaded?'translateY(0)':'translateY(30px)',transition:'opacity 1s .1s cubic-bezier(.16,1,.3,1),transform 1s .1s cubic-bezier(.16,1,.3,1)'}}>
           <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:'clamp(4.5rem,12vw,11rem)',letterSpacing:'.04em',lineHeight:.88,
             background:'linear-gradient(160deg,#fff 0%,#c7d8ff 30%,#4f8ef7 60%,#a78bfa 100%)',
@@ -221,7 +365,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Rotating verb */}
+        {/* DO NOT TOUCH — rotating verb */}
         <h1 className="font-syne font-extrabold tracking-tight mt-6 mb-4 w-full"
           style={{fontSize:'clamp(1.4rem,3.5vw,3rem)',lineHeight:.95,
             opacity:loaded?1:0,transform:loaded?'translateY(0)':'translateY(16px)',
@@ -242,7 +386,7 @@ export default function LandingPage() {
           Explore all 8 UAAP universities — academics, sports legacy, programs, campus life, and admissions in one platform.
         </p>
 
-        {/* Gate card */}
+        {/* DO NOT TOUCH — gate card */}
         <div className="w-full max-w-[440px] mx-auto"
           style={{opacity:loaded?1:0,transform:loaded?'translateY(0)':'translateY(30px)',
             transition:'opacity 1.1s .45s,transform 1.1s .45s cubic-bezier(.34,1.1,.64,1)'}}>
@@ -252,7 +396,6 @@ export default function LandingPage() {
               boxShadow:'0 0 70px rgba(79,142,247,.09),0 30px 60px rgba(0,0,0,.55)'}}>
             <div className="absolute top-0 left-0 right-0 h-px" style={{background:'linear-gradient(90deg,transparent,rgba(79,142,247,.6),rgba(167,139,250,.6),transparent)'}} />
             <div className="relative p-6 sm:p-8">
-              {/* Avatar stack */}
               <div className="flex justify-center mb-6">
                 <div className="flex -space-x-3">
                   {UNI.slice(0,6).map((u,i)=>(
@@ -294,7 +437,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Scroll cue */}
+        {/* DO NOT TOUCH — scroll cue */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
           <div className="w-5 h-9 rounded-full flex items-start justify-center pt-1.5"
             style={{border:'1px solid rgba(255,255,255,.1)',background:'rgba(255,255,255,.03)'}}>
@@ -304,7 +447,62 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══ STATS ═══════════════════════════════ */}
+      {/* ═══════════════════════════════════════
+          SCENE 2: FEATURED STORY FEED — ADDED
+          Cinematic curated content system.
+          To update stories: edit FEATURED_STORIES array above.
+          To add story images: drop files in /public/assets/stories/
+      ═══════════════════════════════════════ */}
+      <section className="relative z-10 py-20 sm:py-28 px-4 sm:px-6">
+        {/* Scene divider */}
+        <div className="max-w-5xl mx-auto mb-16 sm:mb-20">
+          <div className="h-px" style={{background:'linear-gradient(90deg,transparent,rgba(79,142,247,.3),rgba(167,139,250,.3),transparent)'}} />
+        </div>
+
+        <div ref={storiesReveal.ref} className="max-w-7xl mx-auto">
+          {/* Scene header */}
+          <div className="mb-12 sm:mb-16"
+            style={{
+              opacity:    storiesReveal.on ? 1 : 0,
+              transform:  storiesReveal.on ? 'translateY(0)' : 'translateY(28px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1)',
+            }}>
+            {/* MODIFIED: Season label with pulsing dot */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-syne font-semibold tracking-widest uppercase mb-5"
+              style={{background:'rgba(249,115,22,0.1)',border:'1px solid rgba(249,115,22,0.28)',color:'#fb923c'}}>
+              <span className="w-1.5 h-1.5 rounded-full dot-pulse" style={{background:'#fb923c'}} />
+              UAAP Season 2026
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <h2 className="font-syne font-extrabold tracking-tight leading-tight"
+                style={{fontSize:'clamp(2rem,5vw,4rem)',color:'#e8eeff'}}>
+                Featured <span className="grad-warm">Stories</span>
+              </h2>
+              <p className="text-sm max-w-xs sm:text-right leading-relaxed"
+                style={{color:'rgba(220,228,255,0.52)'}}>
+                Highlights, athlete spotlights, and major moments from the season.
+              </p>
+            </div>
+          </div>
+
+          {/* Story grid — 2 cols desktop, 1 col mobile */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 mb-8 sm:mb-10">
+            {FEATURED_STORIES.map((story, i) => (
+              <StoryCard key={story.id} story={story} index={i} />
+            ))}
+          </div>
+
+          {/* ADDED: Editorial note — how to add stories */}
+          <div className="text-center">
+            <p className="text-xs" style={{color:'rgba(220,228,255,0.25)'}}>
+              Stories are configured in <code style={{color:'rgba(147,197,253,0.4)'}}>app/page.tsx</code> · Images go in <code style={{color:'rgba(147,197,253,0.4)'}}>/public/assets/stories/</code>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* DO NOT TOUCH — STATS section */}
       <section className="relative z-10 py-4 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto mb-8 h-px" style={{background:'linear-gradient(90deg,transparent,rgba(79,142,247,.25),rgba(167,139,250,.25),transparent)'}} />
         <div ref={stats.ref} className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
@@ -323,7 +521,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══ FEATURES ════════════════════════════ */}
+      {/* DO NOT TOUCH — FEATURES section */}
       <section className="relative z-10 py-20 sm:py-28 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div ref={features.ref} className="text-center mb-12 sm:mb-16"
@@ -356,7 +554,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══ UNIVERSITY PREVIEW ══════════════════ */}
+      {/* DO NOT TOUCH — UNIVERSITY PREVIEW section */}
       <section className="relative z-10 py-16 sm:py-20 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div ref={unis.ref} className="text-center mb-10 sm:mb-12"
@@ -400,7 +598,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══ FINAL CTA ═══════════════════════════ */}
+      {/* ═══════════════════════════════════════
+          SCENE 3: TRANSITION GATE — MODIFIED
+          Enter Experience CTA with cinematic feel
+      ═══════════════════════════════════════ */}
       <section ref={final.ref} className="relative z-10 py-24 sm:py-32 px-4 sm:px-6">
         <div className="max-w-2xl sm:max-w-3xl mx-auto text-center">
           <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden p-10 sm:p-14"
@@ -409,6 +610,14 @@ export default function LandingPage() {
               opacity:final.on?1:0,transform:final.on?'translateY(0)':'translateY(28px)',
               transition:'opacity .9s,transform .9s cubic-bezier(.16,1,.3,1)'}}>
             <div className="absolute top-0 left-0 right-0 h-px" style={{background:'linear-gradient(90deg,transparent,rgba(79,142,247,.6),rgba(167,139,250,.6),transparent)'}} />
+
+            {/* MODIFIED: Season label above CTA */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-syne font-semibold tracking-widest uppercase mb-6"
+              style={{background:'rgba(79,142,247,0.08)',border:'1px solid rgba(79,142,247,0.22)',color:'rgba(147,197,253,0.7)'}}>
+              <span className="w-1 h-1 rounded-full dot-pulse" style={{background:'#60a5fa'}} />
+              Season 2026 · Enter the Experience
+            </div>
+
             <GraduationCap size={44} className="mx-auto mb-5" style={{color:'rgba(79,142,247,0.6)',filter:'drop-shadow(0 0 16px rgba(79,142,247,.4))',animation:'floatB 4s ease-in-out infinite'}} />
             <h2 className="font-syne font-extrabold tracking-tight mb-4" style={{fontSize:'clamp(1.6rem,3.5vw,3.2rem)',color:'#e8eeff'}}>
               Your future starts<br /><span className="grad">with the right choice</span>
@@ -416,21 +625,30 @@ export default function LandingPage() {
             <p className="max-w-md mx-auto mb-8 sm:mb-10 text-base sm:text-lg leading-relaxed" style={{color:'rgba(220,228,255,0.52)'}}>
               Thousands of students. Eight universities. One platform to help you decide.
             </p>
-            <button onClick={handleEnter}
-              className="inline-flex items-center gap-3 px-8 sm:px-10 py-3.5 sm:py-4 rounded-full font-syne font-extrabold text-sm sm:text-base text-white"
-              style={{background:'linear-gradient(135deg,#2563eb,#7c3aed)',boxShadow:'0 0 55px rgba(79,142,247,.42)',cursor:'pointer',
-                transition:'transform .3s cubic-bezier(.34,1.1,.64,1)'}}
-              onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform='scale(1.04) translateY(-2px)';}}
-              onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform='scale(1)';}}
-              onMouseDown={e=>{(e.currentTarget as HTMLElement).style.transform='scale(.97)';}}
-              onMouseUp={e=>{(e.currentTarget as HTMLElement).style.transform='scale(1.04) translateY(-2px)';}}>
-              <Zap size={17} /> Start Exploring <ChevronRight size={17} />
-            </button>
+
+            {/* MODIFIED: Two CTAs — primary Enter + secondary scroll up */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button onClick={handleEnter}
+                className="inline-flex items-center gap-3 px-8 sm:px-10 py-3.5 sm:py-4 rounded-full font-syne font-extrabold text-sm sm:text-base text-white w-full sm:w-auto justify-center"
+                style={{background:'linear-gradient(135deg,#2563eb,#7c3aed)',boxShadow:'0 0 55px rgba(79,142,247,.42)',cursor:'pointer',
+                  transition:'transform .3s cubic-bezier(.34,1.1,.64,1)'}}
+                onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform='scale(1.04) translateY(-2px)';}}
+                onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform='scale(1)';}}
+                onMouseDown={e=>{(e.currentTarget as HTMLElement).style.transform='scale(.97)';}}
+                onMouseUp={e=>{(e.currentTarget as HTMLElement).style.transform='scale(1.04) translateY(-2px)';}}>
+                <Zap size={17} /> Enter UAAP Experience <ChevronRight size={17} />
+              </button>
+              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full font-syne font-semibold text-sm w-full sm:w-auto justify-center"
+                style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',color:'rgba(220,228,255,0.55)',cursor:'pointer',transition:'all .3s'}}>
+                Back to top
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* DO NOT TOUCH — Footer */}
       <footer className="relative z-10 py-8 sm:py-10 px-4 sm:px-6 text-center safe-bottom" style={{borderTop:'1px solid rgba(255,255,255,.05)'}}>
         <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:'1.7rem',letterSpacing:'.1em',lineHeight:1,marginBottom:6}}>
           <span style={{background:'linear-gradient(135deg,#4f8ef7,#a78bfa)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>FACT</span>
@@ -441,7 +659,7 @@ export default function LandingPage() {
         <p style={{color:'rgba(147,197,253,0.35)',fontSize:'0.68rem',marginTop:4,fontWeight:500}}>Developed by Harry Lagto</p>
       </footer>
 
-      {/* Page transition overlay */}
+      {/* DO NOT TOUCH — Page transition overlay */}
       <div className="fixed inset-0 pointer-events-none" style={{zIndex:200,
         background:'linear-gradient(135deg,#03050d,#060818)',
         opacity:entered?1:0,transform:entered?'scale(1)':'scale(1.05)',

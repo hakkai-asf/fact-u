@@ -1,3 +1,8 @@
+/**
+ * next.config.js — MODIFIED
+ * Added Cache-Control: must-revalidate for /assets/ so freshly added
+ * logo or campus images show immediately after Vercel redeploy.
+ */
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -5,14 +10,14 @@ const nextConfig = {
   },
   async headers() {
     return [
-      // MODIFIED: Assets folder — no-cache so new files show immediately after redeploy
+      // MODIFIED: No-cache for all assets — new files appear on every deploy
       {
         source: '/assets/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
         ],
       },
-      // Security header (unchanged)
+      // Security (unchanged)
       {
         source: '/(.*)',
         headers: [

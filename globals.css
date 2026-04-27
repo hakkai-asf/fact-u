@@ -126,10 +126,10 @@ h1,h2,h3,h4,h5,h6 { color: var(--text); }
 @keyframes floatB { 0%,100%{transform:translateY(0)}  50%{transform:translateY(-18px)} }
 @keyframes floatC { 0%,100%{transform:translateY(-6px) translateX(0)}  50%{transform:translateY(6px) translateX(5px)} }
 .float-a { animation: floatA 7s ease-in-out infinite; }
-/* ADDED: Nebula image breathing animation */
+/* ADDED: Nebula image breathing animation — very slow, GPU-only (transform+opacity) */
 @keyframes nebulaBreath {
-  0%,100% { transform: scale(1);    opacity: 0.38; }
-  50%     { transform: scale(1.04); opacity: 0.44; }
+  0%,100% { opacity: 0.32; }
+  50%     { opacity: 0.42; }
 }
 
 .float-b { animation: floatB 5s ease-in-out infinite; }
