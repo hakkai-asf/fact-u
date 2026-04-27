@@ -3,7 +3,6 @@ import { useRef, useState, useCallback, useEffect, MouseEvent, TouchEvent } from
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, ArrowRight, Trophy, Volume2, VolumeX } from 'lucide-react';
 import { universities } from '@/lib/universities';
-import UnivLogo from '@/components/ui/UnivLogo'; // ADDED
 
 const N = universities.length;
 function mod(n: number, m: number) { return ((n % m) + m) % m; }
@@ -54,8 +53,7 @@ export default function UniversityCarousel() {
     audio.volume = 0.42;
     audio.play().catch(() => {}); // user may not have interacted yet
     audioRef.current = audio;
-    // Auto stop after 6s
-    setTimeout(() => { if (audioRef.current === audio) { audio.pause(); } }, 6000);
+    // Let the chant play to completion — no forced stop
   }, [muted]);
 
   // Spring loop
@@ -250,15 +248,26 @@ export default function UniversityCarousel() {
                   {univIdx + 1}
                 </div>
 
-                {/* MODIFIED: University logo — uses UnivLogo for consistent fallback */}
+                {/* University logo */}
                 <div className="absolute top-3 right-3">
-                  <UnivLogo
-                    slug={univ.slug}
-                    name={univ.shortName}
-                    color={univ.colors.primary}
-                    size={isCenter ? 40 : 28}
-                    rounded="lg"
+                  <img
+                    src={univ.logo}
+                    alt={`${univ.shortName} logo`}
+                    className="rounded-lg object-contain"
+                    style={{ width: isCenter ? 40 : 28, height: isCenter ? 40 : 28, background: 'rgba(0,0,0,0.5)', padding: 3, border: '1px solid rgba(255,255,255,0.15)' }}
+                    onError={e => {
+                      (e.currentTarget as HTMLImageElement).style.display = 'none';
+                      const fb = (e.currentTarget as HTMLImageElement).nextElementSibling as HTMLElement;
+                      if (fb) fb.style.display = 'flex';
+                    }}
                   />
+                  {/* Fallback text badge */}
+                  <div className="rounded-lg items-center justify-center font-syne font-extrabold"
+                    style={{ display: 'none', width: isCenter ? 40 : 28, height: isCenter ? 40 : 28,
+                      background: `${univ.colors.primary}cc`, color: '#fff', fontSize: isCenter ? 10 : 8,
+                      border: '1px solid rgba(255,255,255,0.15)', padding: 3 }}>
+                    {univ.shortName.slice(0,2)}
+                  </div>
                 </div>
 
                 {/* Bottom content */}
