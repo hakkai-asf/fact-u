@@ -1,0 +1,254 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Variables ─────────────────────────────── */
+:root {
+  --bg:               #03050d;
+  --bg2:              #060a18;
+  --glass:            rgba(255,255,255,0.05);
+  --glass-md:         rgba(255,255,255,0.08);
+  --glass-border:     rgba(255,255,255,0.10);
+  --glass-border-hi:  rgba(255,255,255,0.20);
+  --text:             #f0f4ff;
+  --text-dim:         rgba(220,230,255,0.78);
+  --text-muted:       rgba(200,215,255,0.55);
+  --accent:           #4f8ef7;
+  --accent2:          #a78bfa;
+  --ease-spring:      cubic-bezier(0.34,1.56,0.64,1);
+  --ease-out:         cubic-bezier(0.16,1,0.3,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  /* cursor:none only on pointer:fine (non-touch) */
+}
+@media (pointer: fine) {
+  body { cursor: none; }
+}
+
+/* ── Custom cursor (desktop only) ── */
+#cursor-dot, #cursor-ring { display: none; }
+@media (pointer: fine) {
+  #cursor-dot {
+    display: block;
+    position: fixed; pointer-events: none; z-index: 9999;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    transform: translate(-50%,-50%);
+    transition: width .3s var(--ease-spring), height .3s var(--ease-spring), background .3s;
+    mix-blend-mode: screen;
+  }
+  #cursor-ring {
+    display: block;
+    position: fixed; pointer-events: none; z-index: 9998;
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1.5px solid rgba(79,142,247,0.5);
+    transform: translate(-50%,-50%);
+    transition: width .4s var(--ease-spring), height .4s var(--ease-spring), border-color .3s;
+  }
+  body:has(a:hover) #cursor-ring,
+  body:has(button:hover) #cursor-ring {
+    width: 56px; height: 56px;
+    border-color: rgba(79,142,247,0.8);
+  }
+}
+
+/* ── Scrollbar ─────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(79,142,247,0.3); border-radius: 10px; }
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ── Glass system ──────────────────────────── */
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+.glass-md {
+  background: var(--glass-md);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(28px) saturate(1.6);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6);
+}
+.glass-bright {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--glass-border-hi);
+  backdrop-filter: blur(32px) saturate(2);
+  -webkit-backdrop-filter: blur(32px) saturate(2);
+}
+
+/* ── Typography ────────────────────────────── */
+.font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: .02em; }
+.font-syne    { font-family: 'Syne', sans-serif; }
+
+/* Readable body text */
+p, li, span, label { color: var(--text-dim); }
+h1,h2,h3,h4,h5,h6 { color: var(--text); }
+/* Ensure descriptions and supporting text are clearly legible */
+.text-readable { color: rgba(220,230,255,0.82) !important; }
+
+/* ── Gradient text — bright, vivid ─────────── */
+.grad      { background: linear-gradient(135deg,#60a5fa,#c084fc 45%,#67e8f9); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter: brightness(1.15); }
+.grad-warm { background: linear-gradient(135deg,#fb923c,#f43f5e 45%,#c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter: brightness(1.15); }
+.grad-gold { background: linear-gradient(135deg,#fcd34d,#fbbf24 45%,#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter: brightness(1.1); }
+
+/* ── Glow ──────────────────────────────────── */
+.glow-blue   { box-shadow: 0 0 40px rgba(79,142,247,0.25), 0 0 80px rgba(79,142,247,0.08); }
+.text-glow   { text-shadow: 0 0 30px rgba(79,142,247,0.6), 0 0 60px rgba(79,142,247,0.3); }
+
+/* ── Shimmer ───────────────────────────────── */
+@keyframes shimmer {
+  from { transform: translateX(-100%) skewX(-20deg); }
+  to   { transform: translateX(200%)  skewX(-20deg); }
+}
+.shimmer { position: relative; overflow: hidden; }
+.shimmer::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+  transform: translateX(-100%) skewX(-20deg);
+  animation: shimmer 3.5s ease-in-out infinite;
+}
+
+/* ── Float animations ──────────────────────── */
+@keyframes floatA { 0%,100%{transform:translateY(0) rotate(0)}  33%{transform:translateY(-14px) rotate(.8deg)} 66%{transform:translateY(-7px) rotate(-.8deg)} }
+@keyframes floatB { 0%,100%{transform:translateY(0)}  50%{transform:translateY(-18px)} }
+@keyframes floatC { 0%,100%{transform:translateY(-6px) translateX(0)}  50%{transform:translateY(6px) translateX(5px)} }
+.float-a { animation: floatA 7s ease-in-out infinite; }
+/* ADDED: Nebula image breathing animation */
+@keyframes nebulaBreath {
+  0%,100% { transform: scale(1);    opacity: 0.38; }
+  50%     { transform: scale(1.04); opacity: 0.44; }
+}
+
+.float-b { animation: floatB 5s ease-in-out infinite; }
+.float-c { animation: floatC 9s ease-in-out infinite; }
+
+/* ── Pulse ─────────────────────────────────── */
+@keyframes softPulse  { 0%,100%{opacity:.6;transform:scale(1)}  50%{opacity:1;transform:scale(1.03)} }
+@keyframes glowPulse  { 0%,100%{box-shadow:0 0 20px rgba(79,142,247,.2)}  50%{box-shadow:0 0 50px rgba(79,142,247,.5),0 0 100px rgba(79,142,247,.2)} }
+@keyframes dotPulse   { 0%,100%{transform:scale(1);opacity:1}  50%{transform:scale(1.7);opacity:.6} }
+.pulse-glow { animation: glowPulse 3s ease-in-out infinite; }
+.dot-pulse  { animation: dotPulse 2s ease-in-out infinite; }
+
+/* ── Reveal animations ─────────────────────── */
+@keyframes fadeUp    { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+@keyframes scaleIn   { from{opacity:0;transform:scale(0.93)}      to{opacity:1;transform:scale(1)} }
+@keyframes slideLeft { from{opacity:0;transform:translateX(-36px)} to{opacity:1;transform:translateX(0)} }
+.anim-fade-up  { animation: fadeUp  .8s var(--ease-out) both; }
+.anim-scale-in { animation: scaleIn .7s var(--ease-spring) both; }
+.d1{animation-delay:.06s} .d2{animation-delay:.13s} .d3{animation-delay:.22s}
+.d4{animation-delay:.32s} .d5{animation-delay:.44s} .d6{animation-delay:.58s}
+
+/* ── Bar grow ──────────────────────────────── */
+@keyframes barGrow { from{width:0;opacity:0} to{opacity:1} }
+.bar-grow { animation: barGrow 1.2s var(--ease-out) both; }
+
+/* ── Scroll indicator ──────────────────────── */
+@keyframes scrollDot { 0%{transform:translateY(0);opacity:1} 100%{transform:translateY(14px);opacity:0} }
+.scroll-dot { animation: scrollDot 1.8s ease-in-out infinite; }
+
+/* mesh-bg removed - nebula canvas background used instead */
+.mesh-bg { background: #03050d; }
+
+/* ── Grid overlay ──────────────────────────── */
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(79,142,247,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,142,247,.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* ── Neon border ───────────────────────────── */
+.neon-border { position: relative; }
+.neon-border::after {
+  content:''; position:absolute; inset:-1px; border-radius:inherit;
+  background: linear-gradient(135deg,rgba(79,142,247,.45),rgba(167,139,250,.45),rgba(56,189,248,.45));
+  z-index:-1; filter:blur(5px); opacity:0; transition:opacity .4s;
+}
+.neon-border:hover::after { opacity:1; }
+
+/* ── Section divider ───────────────────────── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg,transparent,rgba(79,142,247,.28),rgba(167,139,250,.28),transparent);
+}
+
+/* ── Buttons ───────────────────────────────── */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .85rem 1.8rem; border-radius: 100px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: .88rem;
+  letter-spacing: .02em; color: #fff; border: none; cursor: pointer;
+  background: linear-gradient(135deg,#2c5fc4,#6d28d9);
+  box-shadow: 0 0 28px rgba(79,142,247,.32), inset 0 1px 0 rgba(255,255,255,.14);
+  position: relative; overflow: hidden;
+  transition: transform .3s var(--ease-spring), box-shadow .3s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 50px rgba(79,142,247,.5), inset 0 1px 0 rgba(255,255,255,.2);
+}
+.btn-primary:active { transform: scale(.97); }
+.btn-primary::before {
+  content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+  background: linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);
+  transform: skewX(-20deg); transition: left .5s;
+}
+.btn-primary:hover::before { left: 200%; }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .85rem 1.8rem; border-radius: 100px;
+  font-family: 'Syne', sans-serif; font-weight: 600; font-size: .88rem;
+  color: rgba(230,238,255,.95); background: var(--glass);
+  border: 1px solid var(--glass-border-hi);
+  transition: all .3s var(--ease-spring); backdrop-filter: blur(16px);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-ghost:hover {
+  background: var(--glass-md); color: #fff;
+  border-color: rgba(79,142,247,.45);
+  transform: translateY(-2px);
+}
+.btn-ghost:active { transform: scale(.97); }
+
+/* ── Magnetic button (reduced on mobile) ────── */
+.btn-magnetic { transition: transform .3s var(--ease-spring), box-shadow .3s; }
+.btn-magnetic:active { transform: scale(.97) !important; }
+
+/* ── Responsive text ───────────────────────── */
+@media (max-width: 640px) {
+  /* Ensure text never overflows */
+  h1, h2, h3 { word-break: break-word; hyphens: auto; }
+  p { font-size: .9rem; }
+}
+
+/* ── Responsive utilities ──────────────────── */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Safe area (iOS notch) ─────────────────── */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }

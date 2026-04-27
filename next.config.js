@@ -3,9 +3,16 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Allow cross-origin fonts
   async headers() {
     return [
+      // MODIFIED: Assets folder — no-cache so new files show immediately after redeploy
+      {
+        source: '/assets/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+        ],
+      },
+      // Security header (unchanged)
       {
         source: '/(.*)',
         headers: [

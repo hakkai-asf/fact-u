@@ -1,24 +1,29 @@
 /**
  * UnivLogo — universal university logo component.
- * Tries to load the real PNG from /assets/logos/{slug}-logo.png
- * Falls back to a styled abbreviation block with the school's primary color.
  *
- * Usage:
- *   <UnivLogo slug="up"        name="UP"   color="#7B1113" size={40} />
- *   <UnivLogo slug="ateneo"    name="ADMU" color="#003D8F" size={48} rounded="xl" />
+ * MODIFIED: Fixed Vercel/production image loading issues:
+ * - Added key prop reset so failed state clears on slug change
+ * - Added cache-busting via build ID to prevent stale Vercel CDN cache
+ * - Robust onError that surfaces the fallback correctly every time
+ * - Works correctly when you add a new logo file and redeploy
  */
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+// ADDED: Build-time cache buster — changes on every Vercel deployment
+// so freshly added images always load without manual cache clearing.
+// In production this becomes the Vercel deployment ID; locally it stays "dev".
+const CACHE_BUST = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ?? 'dev';
 
 interface Props {
-  slug:      string;          // e.g. "up", "ateneo", "dlsu"
-  name:      string;          // shortName used as fallback text
-  color:     string;          // primary color for fallback bg + border glow
-  size?:     number;          // px width & height (default 40)
-  rounded?:  string;          // tailwind rounded-* value (default "xl")
+  slug:       string;
+  name:       string;
+  color:      string;
+  size?:      number;
+  rounded?:   string;
   className?: string;
-  style?:    React.CSSProperties;
-  glow?:     boolean;         // whether to add color box-shadow
+  style?:     React.CSSProperties;
+  glow?:      boolean;
 }
 
 export default function UnivLogo({
@@ -29,47 +34,67 @@ export default function UnivLogo({
   style,
   glow = false,
 }: Props) {
+  // MODIFIED: Reset failed state whenever slug changes (route navigation fix)
   const [failed, setFailed] = useState(false);
+  useEffect(() => { setFailed(false); }, [slug]);
 
   const borderRadius =
-    rounded === 'full' ? '50%' :
-    rounded === '2xl'  ? 16 :
-    rounded === '3xl'  ? 24 :
-    rounded === 'lg'   ? 8  :
-    rounded === 'md'   ? 6  :
-    rounded === 'sm'   ? 4  : 12; // xl default
+    rounded === 'full' ? '50%'  :
+    rounded === '2xl'  ? 16     :
+    rounded === '3xl'  ? 24     :
+    rounded === 'lg'   ? 8      :
+    rounded === 'md'   ? 6      :
+    rounded === 'sm'   ? 4      : 12;
 
   const boxShadow = glow ? `0 0 18px ${color}66, 0 0 4px ${color}44` : undefined;
-
-  const abbr = name.length <= 2 ? name : name.slice(0, 2);
-  const fontSize = size <= 28 ? size * 0.38 : size <= 48 ? size * 0.35 : size * 0.3;
+  const abbr      = name.length <= 2 ? name : name.slice(0, 2);
+  const fontSize  = size <= 28 ? size * 0.38 : size <= 48 ? size * 0.35 : size * 0.3;
 
   const wrapStyle: React.CSSProperties = {
-    width:       size,
-    height:      size,
+    width:          size,
+    height:         size,
     borderRadius,
-    flexShrink:  0,
-    overflow:    'hidden',
-    position:    'relative',
-    display:     'flex',
-    alignItems:  'center',
+    flexShrink:     0,
+    overflow:       'hidden',
+    position:       'relative',
+    display:        'flex',
+    alignItems:     'center',
     justifyContent: 'center',
     boxShadow,
     border: `1px solid ${color}44`,
     ...style,
   };
 
+  // MODIFIED: Use slug (lowercase, trimmed) as the canonical filename key.
+  // This ensures case-sensitive Linux (Vercel) filesystem always matches.
+  const safeSlug = slug.toLowerCase().trim();
+
+  // MODIFIED: Cache-bust URL — appended as query param.
+  // Next.js/Vercel serves /public files as static assets; query params are
+  // forwarded so the CDN edge treats each deploy's files as fresh.
+  const src = `/assets/logos/${safeSlug}-logo.png?v=${CACHE_BUST}`;
+
   if (!failed) {
     return (
       <div className={className} style={wrapStyle}>
-        {/* Subtle color bg so transparent logos look right */}
         <div style={{ position: 'absolute', inset: 0, background: `${color}18` }} />
         <img
-          src={`/assets/logos/${slug}-logo.png`}
+          src={src}
           alt={`${name} logo`}
-          style={{ width: '100%', height: '100%', objectFit: 'contain', padding: Math.max(3, size * 0.07), position: 'relative', zIndex: 1 }}
+          style={{
+            width:      '100%',
+            height:     '100%',
+            objectFit:  'contain',
+            padding:    Math.max(3, size * 0.07),
+            position:   'relative',
+            zIndex:     1,
+          }}
           loading="lazy"
-          onError={() => setFailed(true)}
+          // MODIFIED: onError is a plain function — no closure over stale state
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.display = 'none';
+            setFailed(true);
+          }}
         />
       </div>
     );
@@ -82,7 +107,7 @@ export default function UnivLogo({
       style={{
         ...wrapStyle,
         background: `linear-gradient(135deg, ${color}dd, ${color}99)`,
-        color: '#fff',
+        color:      '#fff',
         fontSize,
         letterSpacing: '-0.02em',
       }}
